@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduEnroll — Enrollment Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #0f172a;
+  --navy2: #1e293b;
+  --navy3: #2d3a52;
+  --blue: #1e3a8a;
+  --blue2: #3b82f6;
+  --blue-light: #dbeafe;
+  --blue-xlight: #eff6ff;
+  --green: #059669;
+  --green-light: #d1fae5;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --purple: #7c3aed;
+  --purple-light: #ede9fe;
+  --gray: #f8fafc;
+  --gray2: #f1f5f9;
+  --gray3: #e2e8f0;
+  --gray4: #cbd5e1;
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #94a3b8;
+  --white: #ffffff;
+  --sidebar-w: 230px;
+  --header-h: 62px;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+}
+
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--gray); color: var(--text); height: 100vh; overflow: hidden; display: flex; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100vh;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 200;
+}
+
+.sidebar-logo {
+  height: 70px;
+  background: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.logo-icon { font-size: 24px; }
+.logo-text { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -.03em; }
+
+.sidebar-nav { flex: 1; padding: 16px 10px; overflow-y: auto; }
+
+.nav-section-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text3);
+  padding: 0 8px;
+  margin: 16px 0 6px;
+}
+
+.nav-section-label:first-child { margin-top: 0; }
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  color: #94a3b8;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all .15s;
+  margin-bottom: 2px;
+}
+
+.nav-btn:hover { background: var(--navy2); color: #fff; }
+.nav-btn.active { background: var(--blue2); color: #fff; }
+.nav-btn .nav-icon { font-size: 15px; flex-shrink: 0; }
+
+.sidebar-footer {
+  padding: 14px;
+  border-top: 1px solid #1e293b;
+  font-size: 11px;
+  color: var(--text3);
+  text-align: center;
+  flex-shrink: 0;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── MAIN ── */
+.main-wrap {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.topbar {
+  height: var(--header-h);
+  background: var(--white);
+  border-bottom: 1px solid var(--gray3);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.topbar-title { font-size: 18px; font-weight: 700; color: var(--blue); letter-spacing: -.02em; flex: 1; }
+.topbar-date { font-size: 12.5px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+}
+
+/* ── PAGES ── */
+.page { display: none; animation: fadeIn .2s ease; }
+.page.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── CARDS ── */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+
+.stat-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border-left: 4px solid transparent;
+  transition: box-shadow .2s;
+}
+
+.stat-card:hover { box-shadow: var(--shadow-md); }
+.stat-card.blue { border-color: var(--blue); }
+.stat-card.green { border-color: var(--green); }
+.stat-card.purple { border-color: var(--purple); }
+.stat-card.red { border-color: var(--red); }
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.stat-card.blue .stat-icon { background: var(--blue-light); }
+.stat-card.green .stat-icon { background: var(--green-light); }
+.stat-card.purple .stat-icon { background: var(--purple-light); }
+.stat-card.red .stat-icon { background: var(--red-light); }
+
+.stat-info { flex: 1; }
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-card.blue .stat-value { color: var(--blue); }
+.stat-card.green .stat-value { color: var(--green); }
+.stat-card.purple .stat-value { color: var(--purple); }
+.stat-card.red .stat-value { color: var(--red); }
+
+.stat-label { font-size: 12px; color: var(--text3); font-weight: 500; }
+
+/* ── PANELS ── */
+.panel {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--gray3);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.panel-title { font-size: 14px; font-weight: 700; color: var(--text); }
+
+.panel-body { padding: 0; }
+
+/* ── TOOLBAR ── */
+.toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.search-box {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+  max-width: 260px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 7px 12px 7px 32px;
+  border: 1px solid var(--gray3);
+  border-radius: var(--radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--gray);
+  outline: none;
+  transition: border-color .15s;
+}
+
+.search-box input:focus { border-color: var(--blue2); background: #fff; }
+.search-box::before { content: '🔍'; position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 12px; pointer-events: none; }
+
+.sel {
+  padding: 7px 10px;
+  border: 1px solid var(--gray3);
+  border-radius: var(--radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12.5px;
+  color: var(--text);
+  background: var(--gray);
+  outline: none;
+  cursor: pointer;
+}
+
+.sel:focus { border-color: var(--blue2); }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn:active { transform: scale(.97); }
+
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-blue:hover { background: #1d4ed8; }
+
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover { background: #047857; }
+
+.btn-red { background: var(--red); color: #fff; }
+.btn-red:hover { background: #b91c1c; }
+
+.btn-gray { background: #64748b; color: #fff; }
+.btn-gray:hover { background: #475569; }
+
+.btn-outline { background: #fff; color: var(--text2); border: 1px solid var(--gray3); }
+.btn-outline:hover { background: var(--gray); border-color: var(--gray4); }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-green { background: var(--green-light); color: #065f46; }
+.badge-red { background: var(--red-light); color: #991b1b; }
+.badge-gray { background: var(--gray2); color: var(--text2); }
+.badge-blue { background: var(--blue-light); color: var(--blue); }
+.badge-amber { background: var(--amber-light); color: #92400e; }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+thead th {
+  padding: 10px 14px;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 600;
+  font-size: 12px;
+  text-align: left;
+  white-space: nowrap;
+  letter-spacing: .01em;
+}
+
+thead th:first-child { border-radius: 0; }
+
+tbody tr { transition: background .1s; cursor: pointer; }
+tbody tr:hover { background: var(--blue-xlight); }
+tbody tr.selected { background: var(--blue-light) !important; }
+tbody tr:nth-child(even) { background: var(--gray); }
+tbody tr:nth-child(even):hover { background: var(--blue-xlight); }
+tbody tr.selected:nth-child(even) { background: var(--blue-light) !important; }
+
+tbody td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--gray3);
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+.no-data { text-align: center; padding: 48px 20px; color: var(--text3); font-size: 13px; }
+.no-data-icon { font-size: 32px; margin-bottom: 8px; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,.5);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
+
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+
+.modal-lg { max-width: 600px; }
+
+.modal-header {
+  background: var(--blue);
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title { font-size: 15px; font-weight: 700; color: #fff; }
+
+.modal-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,.2);
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+}
+
+.modal-close:hover { background: rgba(255,255,255,.3); }
+
+.modal-body { padding: 22px; }
+
+.modal-footer {
+  padding: 14px 22px;
+  background: var(--gray);
+  border-top: 1px solid var(--gray3);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ── FORM ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid .full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 12px; font-weight: 600; color: var(--text2); }
+
+.field input,
+.field select,
+.field textarea {
+  padding: 8px 11px;
+  border: 1.5px solid var(--gray3);
+  border-radius: var(--radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+  background: #fff;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus { border-color: var(--blue2); }
+
+.field .required::after { content: ' *'; color: var(--red); }
+
+.field-err { font-size: 11px; color: var(--red); }
+
+/* ── CHECKLIST ── */
+.check-list {
+  border: 1.5px solid var(--gray3);
+  border-radius: var(--radius-sm);
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--gray);
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: background .1s;
+  border-bottom: 1px solid var(--gray3);
+}
+
+.check-item:last-child { border-bottom: none; }
+.check-item:hover { background: var(--blue-xlight); }
+.check-item input[type="checkbox"] { accent-color: var(--blue); width: 14px; height: 14px; cursor: pointer; }
+.check-item.checked { background: var(--blue-xlight); color: var(--blue); font-weight: 500; }
+
+/* ── GWA BADGE ── */
+.gwa-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: var(--blue-xlight);
+  border-bottom: 1px solid var(--gray3);
+  font-size: 13px;
+}
+
+.gwa-val { font-size: 18px; font-weight: 700; color: var(--blue); font-family: 'JetBrains Mono', monospace; }
+
+/* ── INFO ROW ── */
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--gray3);
+  font-size: 12.5px;
+  color: var(--text3);
+  background: var(--gray);
+}
+
+/* ── TOAST ── */
+.toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+
+.toast {
+  padding: 11px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  animation: toastIn .25s ease;
+  min-width: 220px;
+  max-width: 320px;
+}
+
+@keyframes toastIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+
+.toast.success { background: #065f46; color: #fff; }
+.toast.error { background: #991b1b; color: #fff; }
+.toast.info { background: var(--blue); color: #fff; }
+
+/* ── CONFIRM DIALOG ── */
+.confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 800; display: none; align-items: center; justify-content: center; }
+.confirm-overlay.open { display: flex; }
+.confirm-box { background: #fff; border-radius: 12px; padding: 24px; width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,.2); text-align: center; }
+.confirm-icon { font-size: 36px; margin-bottom: 12px; }
+.confirm-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.confirm-msg { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.5; }
+.confirm-btns { display: flex; justify-content: center; gap: 10px; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray4); border-radius: 3px; }
+
+/* ── EDITABLE GRADE INPUT ── */
+.grade-input {
+  width: 60px;
+  padding: 4px 6px;
+  border: 1px solid var(--gray3);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  text-align: center;
+  outline: none;
+  background: #fff;
+}
+
+.grade-input:focus { border-color: var(--blue2); }
+.grade-pass { color: var(--green); font-weight: 600; }
+.grade-fail { color: var(--red); font-weight: 600; }
+
+/* ── REPORTS ── */
+.report-info { font-size: 12px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-icon">🎓</span>
+    <span class="logo-text">EduEnroll</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <button class="nav-btn active" onclick="showPage('dashboard', this)"><span class="nav-icon">🏠</span> Dashboard</button>
+    <button class="nav-btn" onclick="showPage('students', this)"><span class="nav-icon">👨‍🎓</span> Students</button>
+    <button class="nav-btn" onclick="showPage('subjects', this)"><span class="nav-icon">📚</span> Subjects</button>
+    <div class="nav-section-label">Academic</div>
+    <button class="nav-btn" onclick="showPage('enrollment', this)"><span class="nav-icon">📋</span> Enrollment</button>
+    <button class="nav-btn" onclick="showPage('grades', this)"><span class="nav-icon">📊</span> Grades</button>
+    <button class="nav-btn" onclick="showPage('reports', this)"><span class="nav-icon">📄</span> Reports</button>
+  </nav>
+  <div class="sidebar-footer">v1.0 &nbsp;·&nbsp; © 2025 EduEnroll</div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <header class="topbar">
+    <span class="topbar-title" id="pageTitle">Dashboard</span>
+    <span class="topbar-date" id="topDate"></span>
+  </header>
+
+  <div class="content-area">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-icon">👨‍🎓</div>
+          <div class="stat-info">
+            <div class="stat-value" id="ds-students">0</div>
+            <div class="stat-label">Active Students</div>
+          </div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">📚</div>
+          <div class="stat-info">
+            <div class="stat-value" id="ds-subjects">0</div>
+            <div class="stat-label">Total Subjects</div>
+          </div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-icon">📋</div>
+          <div class="stat-info">
+            <div class="stat-value" id="ds-enrolled">0</div>
+            <div class="stat-label">Enrolled this SY</div>
+          </div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon">📊</div>
+          <div class="stat-info">
+            <div class="stat-value" id="ds-total-enroll">0</div>
+            <div class="stat-label">Total Enrollments</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Recent Enrollments</span>
+          <span class="report-info" id="ds-sy-label"></span>
+        </div>
+        <div class="panel-body">
+          <div class="table-wrap">
+            <table id="dash-table">
+              <thead><tr>
+                <th>Student No.</th><th>Student Name</th><th>Subject Code</th>
+                <th>Subject</th><th>School Year</th><th>Semester</th><th>Date Enrolled</th>
+              </tr></thead>
+              <tbody id="dash-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STUDENTS ══ -->
+    <div class="page" id="page-students">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="toolbar">
+            <div class="search-box"><input type="text" id="stu-search" placeholder="Search students..." oninput="loadStudents()"></div>
+            <select class="sel" id="stu-filter" onchange="loadStudents()">
+              <option>All Status</option><option>Active</option><option>Inactive</option><option>Graduated</option><option>Dropped</option>
+            </select>
+          </div>
+          <div class="toolbar">
+            <button class="btn btn-blue" onclick="openStudentForm()">➕ Add Student</button>
+            <button class="btn btn-green" onclick="editSelectedStudent()">✏️ Edit</button>
+            <button class="btn btn-red" onclick="deleteSelectedStudent()">🗑️ Delete</button>
+          </div>
+        </div>
+        <div class="info-row"><span id="stu-count">0 records</span></div>
+        <div class="panel-body">
+          <div class="table-wrap">
+            <table id="stu-table">
+              <thead><tr>
+                <th>Student No.</th><th>Full Name</th><th>Gender</th>
+                <th>Year</th><th>Course</th><th>Status</th><th>Date Added</th>
+              </tr></thead>
+              <tbody id="stu-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SUBJECTS ══ -->
+    <div class="page" id="page-subjects">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="toolbar">
+            <div class="search-box"><input type="text" id="sub-search" placeholder="Search subjects..." oninput="loadSubjects()"></div>
+          </div>
+          <div class="toolbar">
+            <button class="btn btn-blue" onclick="openSubjectForm()">➕ Add Subject</button>
+            <button class="btn btn-green" onclick="editSelectedSubject()">✏️ Edit</button>
+            <button class="btn btn-red" onclick="deleteSelectedSubject()">🗑️ Delete</button>
+          </div>
+        </div>
+        <div class="info-row"><span id="sub-count">0 records</span></div>
+        <div class="panel-body">
+          <div class="table-wrap">
+            <table id="sub-table">
+              <thead><tr>
+                <th>Code</th><th>Subject Name</th><th>Units</th><th>Year Level</th><th>Semester</th><th>Description</th>
+              </tr></thead>
+              <tbody id="sub-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ENROLLMENT ══ -->
+    <div class="page" id="page-enrollment">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="toolbar">
+            <select class="sel" id="enr-student" onchange="loadEnrollments()" style="max-width:240px">
+              <option value="">All Students</option>
+            </select>
+            <select class="sel" id="enr-sy" onchange="loadEnrollments()"></select>
+            <select class="sel" id="enr-sem" onchange="loadEnrollments()">
+              <option>All</option><option>1st</option><option>2nd</option><option>Summer</option>
+            </select>
+          </div>
+          <div class="toolbar">
+            <button class="btn btn-blue" onclick="openEnrollForm()">➕ Enroll Student</button>
+            <button class="btn btn-red" onclick="dropEnrollment()">❌ Drop Subject</button>
+          </div>
+        </div>
+        <div class="info-row"><span id="enr-count">0 records</span></div>
+        <div class="panel-body">
+          <div class="table-wrap">
+            <table id="enr-table">
+              <thead><tr>
+                <th>Student No.</th><th>Student Name</th><th>Code</th>
+                <th>Subject</th><th>Units</th><th>School Year</th><th>Semester</th><th>Status</th><th>Date Enrolled</th>
+              </tr></thead>
+              <tbody id="enr-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ GRADES ══ -->
+    <div class="page" id="page-grades">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="toolbar">
+            <select class="sel" id="grd-student" onchange="loadGrades()" style="max-width:280px">
+              <option value="">-- Select Student --</option>
+            </select>
+            <select class="sel" id="grd-sy" onchange="loadGrades()"></select>
+          </div>
+          <button class="btn btn-green" onclick="saveGrades()">💾 Save Grades</button>
+        </div>
+        <div class="gwa-bar" id="gwa-bar" style="display:none">
+          <span>GWA:</span>
+          <span class="gwa-val" id="gwa-val">—</span>
+          <span id="gwa-units" style="font-size:12px;color:var(--text3)"></span>
+        </div>
+        <div class="panel-body">
+          <div class="table-wrap">
+            <table id="grd-table">
+              <thead><tr>
+                <th>Code</th><th>Subject</th><th>Units</th><th>School Year</th><th>Semester</th><th>Grade</th><th>Status</th>
+              </tr></thead>
+              <tbody id="grd-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ REPORTS ══ -->
+    <div class="page" id="page-reports">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="toolbar">
+            <select class="sel" id="rpt-type">
+              <option value="0">All Active Students</option>
+              <option value="1">Enrollment List by Subject</option>
+              <option value="2">Student Grade Summary</option>
+              <option value="3">Subjects Offered</option>
+              <option value="4">Students Per Course</option>
+            </select>
+            <select class="sel" id="rpt-sy"></select>
+            <select class="sel" id="rpt-sem">
+              <option>All</option><option>1st</option><option>2nd</option><option>Summer</option>
+            </select>
+            <button class="btn btn-blue" onclick="generateReport()">📊 Generate</button>
+          </div>
+          <span class="report-info" id="rpt-count"></span>
+        </div>
+        <div class="panel-body">
+          <div class="table-wrap" id="rpt-table-wrap">
+            <div class="no-data"><div class="no-data-icon">📊</div>Select a report type and click Generate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- content-area -->
+</div><!-- main-wrap -->
+
+<!-- ══ STUDENT FORM MODAL ══ -->
+<div class="modal-overlay" id="modal-student">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="stu-modal-title">Add New Student</span>
+      <button class="modal-close" onclick="closeModal('modal-student')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field full"><label class="required">Student No.</label><input type="text" id="sf-no" placeholder="e.g. 2024-0001"></div>
+        <div class="field"><label class="required">Last Name</label><input type="text" id="sf-ln"></div>
+        <div class="field"><label class="required">First Name</label><input type="text" id="sf-fn"></div>
+        <div class="field"><label>Middle Name</label><input type="text" id="sf-mn"></div>
+        <div class="field"><label>Gender</label>
+          <select id="sf-gender"><option>Male</option><option>Female</option><option>Other</option></select>
+        </div>
+        <div class="field"><label>Birthdate</label><input type="date" id="sf-bdate"></div>
+        <div class="field"><label>Contact No.</label><input type="text" id="sf-contact"></div>
+        <div class="field"><label>Email</label><input type="email" id="sf-email"></div>
+        <div class="field full"><label>Address</label><input type="text" id="sf-address"></div>
+        <div class="field"><label class="required">Year Level</label>
+          <select id="sf-year"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+        </div>
+        <div class="field"><label class="required">Course</label><input type="text" id="sf-course" placeholder="e.g. BSCS"></div>
+        <div class="field"><label>Status</label>
+          <select id="sf-status"><option>Active</option><option>Inactive</option><option>Graduated</option><option>Dropped</option></select>
+        </div>
+      </div>
+      <div class="field-err" id="sf-err" style="margin-top:8px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-student')">Cancel</button>
+      <button class="btn btn-blue" onclick="saveStudent()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SUBJECT FORM MODAL ══ -->
+<div class="modal-overlay" id="modal-subject">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="sub-modal-title">Add Subject</span>
+      <button class="modal-close" onclick="closeModal('modal-subject')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field"><label class="required">Subject Code</label><input type="text" id="subf-code" placeholder="e.g. CC101"></div>
+        <div class="field"><label class="required">Subject Name</label><input type="text" id="subf-name"></div>
+        <div class="field"><label class="required">Units</label>
+          <select id="subf-units"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select>
+        </div>
+        <div class="field"><label>Year Level</label>
+          <select id="subf-year"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+        </div>
+        <div class="field"><label>Semester</label>
+          <select id="subf-sem"><option>1st</option><option>2nd</option><option>Summer</option></select>
+        </div>
+        <div class="field full"><label>Description</label><input type="text" id="subf-desc"></div>
+      </div>
+      <div class="field-err" id="subf-err" style="margin-top:8px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-subject')">Cancel</button>
+      <button class="btn btn-blue" onclick="saveSubject()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ENROLL FORM MODAL ══ -->
+<div class="modal-overlay" id="modal-enroll">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">Enroll Student in Subjects</span>
+      <button class="modal-close" onclick="closeModal('modal-enroll')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field full"><label class="required">Student</label>
+          <select id="enrf-student"></select>
+        </div>
+        <div class="field"><label class="required">School Year</label><input type="text" id="enrf-sy"></div>
+        <div class="field"><label class="required">Semester</label>
+          <select id="enrf-sem"><option>1st</option><option>2nd</option><option>Summer</option></select>
+        </div>
+        <div class="field full">
+          <label class="required">Subjects (check to select)</label>
+          <div class="check-list" id="enrf-subjects"></div>
+        </div>
+      </div>
+      <div class="field-err" id="enrf-err" style="margin-top:8px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-enroll')">Cancel</button>
+      <button class="btn btn-blue" onclick="saveEnrollment()">✅ Enroll Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONFIRM DIALOG ══ -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirm-icon">⚠️</div>
+    <div class="confirm-title" id="confirm-title">Confirm</div>
+    <div class="confirm-msg" id="confirm-msg"></div>
+    <div class="confirm-btns">
+      <button class="btn btn-outline" onclick="confirmResolve(false)">Cancel</button>
+      <button class="btn btn-red" id="confirm-ok-btn" onclick="confirmResolve(true)">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.min.js"></script>
+<script>
+// ══════════════════════════════════════════
+//  DATABASE LAYER
+// ══════════════════════════════════════════
+let DB = null;
+
+async function initDB() {
+  const SQL = await initSqlJs({
+    locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
+  });
+  DB = new SQL.Database();
+
+  DB.run(`
+    CREATE TABLE IF NOT EXISTS Students (
+      StudentID   INTEGER PRIMARY KEY AUTOINCREMENT,
+      StudentNo   TEXT NOT NULL UNIQUE,
+      LastName    TEXT NOT NULL,
+      FirstName   TEXT NOT NULL,
+      MiddleName  TEXT DEFAULT '',
+      Gender      TEXT DEFAULT 'Male',
+      Birthdate   TEXT DEFAULT '',
+      Address     TEXT DEFAULT '',
+      Contact     TEXT DEFAULT '',
+      Email       TEXT DEFAULT '',
+      YearLevel   INTEGER DEFAULT 1,
+      Course      TEXT DEFAULT '',
+      Status      TEXT DEFAULT 'Active',
+      DateAdded   TEXT DEFAULT (date('now'))
+    );
+    CREATE TABLE IF NOT EXISTS Subjects (
+      SubjectID   INTEGER PRIMARY KEY AUTOINCREMENT,
+      SubjectCode TEXT NOT NULL UNIQUE,
+      SubjectName TEXT NOT NULL,
+      Units       INTEGER NOT NULL DEFAULT 3,
+      YearLevel   INTEGER DEFAULT 1,
+      Semester    TEXT DEFAULT '1st',
+      Description TEXT DEFAULT ''
+    );
+    CREATE TABLE IF NOT EXISTS Enrollments (
+      EnrollID    INTEGER PRIMARY KEY AUTOINCREMENT,
+      StudentID   INTEGER NOT NULL,
+      SubjectID   INTEGER NOT NULL,
+      SchoolYear  TEXT NOT NULL,
+      Semester    TEXT NOT NULL,
+      Grade       REAL,
+      Status      TEXT DEFAULT 'Enrolled',
+      DateEnrolled TEXT DEFAULT (date('now')),
+      FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
+      FOREIGN KEY (SubjectID) REFERENCES Subjects(SubjectID),
+      UNIQUE(StudentID, SubjectID, SchoolYear, Semester)
+    );
+  `);
+
+  seedData();
+}
+
+function seedData() {
+  const count = queryScalar('SELECT COUNT(*) FROM Students');
+  if (count > 0) return;
+
+  DB.run(`INSERT INTO Students (StudentNo,LastName,FirstName,MiddleName,Gender,YearLevel,Course,Status) VALUES
+    ('2024-0001','Reyes','Maria','Santos','Female',1,'BSCS','Active'),
+    ('2024-0002','Cruz','Juan','dela','Male',2,'BSIT','Active'),
+    ('2024-0003','Santos','Ana','Garcia','Female',3,'BSCS','Active'),
+    ('2023-0010','Bautista','Carlos','Mendoza','Male',2,'BSIT','Active')`);
+
+  DB.run(`INSERT INTO Subjects (SubjectCode,SubjectName,Units,YearLevel,Semester) VALUES
+    ('CC101','Introduction to Computing',3,1,'1st'),
+    ('CC102','Computer Programming 1',3,1,'1st'),
+    ('CC103','Computer Programming 2',3,1,'2nd'),
+    ('CC201','Data Structures and Algorithms',3,2,'1st'),
+    ('CC202','Object-Oriented Programming',3,2,'1st'),
+    ('CC301','Software Engineering',3,3,'1st'),
+    ('CC302','Database Management Systems',3,2,'2nd'),
+    ('MATH101','Mathematics in the Modern World',3,1,'1st'),
+    ('GE101','Understanding the Self',3,1,'1st'),
+    ('PE101','Physical Education 1',2,1,'1st')`);
+
+  // sample enrollments
+  const sy = currentSY();
+  DB.run(`INSERT OR IGNORE INTO Enrollments (StudentID,SubjectID,SchoolYear,Semester) VALUES
+    (1,1,'${sy}','1st'),(1,2,'${sy}','1st'),(1,8,'${sy}','1st'),
+    (2,4,'${sy}','1st'),(2,5,'${sy}','1st'),
+    (3,6,'${sy}','1st'),(4,4,'${sy}','1st'),(4,5,'${sy}','1st')`);
+}
+
+function queryAll(sql, params = []) {
+  try {
+    const stmt = DB.prepare(sql);
+    stmt.bind(params);
+    const rows = [];
+    while (stmt.step()) rows.push(stmt.getAsObject());
+    stmt.free();
+    return rows;
+  } catch(e) { console.error(e); return []; }
+}
+
+function queryScalar(sql, params = []) {
+  const rows = queryAll(sql, params);
+  if (!rows.length) return 0;
+  return Object.values(rows[0])[0] || 0;
+}
+
+function run(sql, params = []) {
+  try { DB.run(sql, params); return true; }
+  catch(e) { console.error(e); return e.message; }
+}
+
+function currentSY() {
+  const y = new Date().getFullYear();
+  return `${y}-${y+1}`;
+}
+
+function syOptions() {
+  const y = new Date().getFullYear();
+  const opts = ['All Years'];
+  for (let i = 0; i <= 4; i++) opts.push(`${y-i}-${y-i+1}`);
+  return opts;
+}
+
+// ══════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════
+const pageTitles = {
+  dashboard:'Dashboard', students:'Students', subjects:'Subjects',
+  enrollment:'Enrollment', grades:'Grades', reports:'Reports'
+};
+
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('pageTitle').textContent = pageTitles[id];
+
+  if (id === 'dashboard') refreshDashboard();
+  if (id === 'students') loadStudents();
+  if (id === 'subjects') loadSubjects();
+  if (id === 'enrollment') { initEnrFilters(); loadEnrollments(); }
+  if (id === 'grades') initGradeFilters();
+  if (id === 'reports') initReportFilters();
+}
+
+// ══════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════
+function refreshDashboard() {
+  const sy = currentSY();
+  document.getElementById('ds-students').textContent = queryScalar("SELECT COUNT(*) FROM Students WHERE Status='Active'");
+  document.getElementById('ds-subjects').textContent = queryScalar("SELECT COUNT(*) FROM Subjects");
+  document.getElementById('ds-enrolled').textContent = queryScalar("SELECT COUNT(DISTINCT StudentID) FROM Enrollments WHERE SchoolYear=?", [sy]);
+  document.getElementById('ds-total-enroll').textContent = queryScalar("SELECT COUNT(*) FROM Enrollments WHERE SchoolYear=?", [sy]);
+  document.getElementById('ds-sy-label').textContent = `Current SY: ${sy}`;
+
+  const rows = queryAll(`
+    SELECT s.StudentNo, s.LastName||', '||s.FirstName AS sname,
+           sub.SubjectCode, sub.SubjectName, e.SchoolYear, e.Semester, e.DateEnrolled
+    FROM Enrollments e
+    JOIN Students s ON e.StudentID=s.StudentID
+    JOIN Subjects sub ON e.SubjectID=sub.SubjectID
+    ORDER BY e.EnrollID DESC LIMIT 20`);
+
+  const tb = document.getElementById('dash-tbody');
+  tb.innerHTML = rows.length ? rows.map(r => `
+    <tr>
+      <td><b>${r.StudentNo}</b></td><td>${r.sname}</td>
+      <td><span class="badge badge-blue">${r.SubjectCode}</span></td>
+      <td>${r.SubjectName}</td><td>${r.SchoolYear}</td>
+      <td>${r.Semester}</td><td>${r.DateEnrolled||'—'}</td>
+    </tr>`).join('') : `<tr><td colspan="7"><div class="no-data"><div class="no-data-icon">📋</div>No enrollments yet</div></td></tr>`;
+}
+
+// ══════════════════════════════════════════
+//  STUDENTS
+// ══════════════════════════════════════════
+let selectedStudentId = null;
+
+function loadStudents() {
+  const s = document.getElementById('stu-search').value;
+  const st = document.getElementById('stu-filter').value;
+  const like = `%${s}%`;
+  const where = st === 'All Status' ? '' : ` AND Status='${st}'`;
+  const rows = queryAll(`
+    SELECT StudentID, StudentNo, LastName||', '||FirstName||' '||IFNULL(MiddleName,'') AS FullName,
+           Gender, YearLevel, Course, Status, DateAdded
+    FROM Students
+    WHERE (LastName LIKE ? OR FirstName LIKE ? OR StudentNo LIKE ? OR Course LIKE ?)${where}
+    ORDER BY LastName, FirstName`, [like,like,like,like]);
+
+  document.getElementById('stu-count').textContent = `${rows.length} record(s)`;
+  const tb = document.getElementById('stu-tbody');
+  tb.innerHTML = rows.length ? rows.map(r => `
+    <tr data-id="${r.StudentID}" onclick="selectRow(this, 'students', ${r.StudentID})" ondblclick="editSelectedStudent()">
+      <td><code style="font-size:12px">${r.StudentNo}</code></td>
+      <td><b>${r.FullName.trim()}</b></td>
+      <td>${r.Gender||'—'}</td><td>${r.YearLevel}</td><td>${r.Course||'—'}</td>
+      <td><span class="badge ${r.Status==='Active'?'badge-green':r.Status==='Graduated'?'badge-blue':'badge-gray'}">${r.Status}</span></td>
+      <td>${r.DateAdded||'—'}</td>
+    </tr>`).join('')
+    : `<tr><td colspan="7"><div class="no-data"><div class="no-data-icon">👨‍🎓</div>No students found</div></td></tr>`;
+}
+
+function selectRow(el, ctx, id) {
+  el.closest('tbody').querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+  if (ctx === 'students') selectedStudentId = id;
+  if (ctx === 'subjects') selectedSubjectId = id;
+  if (ctx === 'enrollment') selectedEnrollId = id;
+  if (ctx === 'grades') selectedEnrollId = id;
+}
+
+let editStudentId = null;
+
+function openStudentForm(id = null) {
+  editStudentId = id;
+  document.getElementById('stu-modal-title').textContent = id ? 'Edit Student Record' : 'Add New Student';
+  const fields = ['sf-no','sf-ln','sf-fn','sf-mn','sf-gender','sf-bdate','sf-contact','sf-email','sf-address','sf-year','sf-course','sf-status'];
+  fields.forEach(f => { const el = document.getElementById(f); if (el.tagName==='SELECT') el.selectedIndex=0; else el.value=''; });
+  document.getElementById('sf-err').textContent = '';
+
+  if (id) {
+    const r = queryAll("SELECT * FROM Students WHERE StudentID=?", [id])[0];
+    if (r) {
+      document.getElementById('sf-no').value = r.StudentNo||'';
+      document.getElementById('sf-ln').value = r.LastName||'';
+      document.getElementById('sf-fn').value = r.FirstName||'';
+      document.getElementById('sf-mn').value = r.MiddleName||'';
+      setSelectVal('sf-gender', r.Gender);
+      document.getElementById('sf-bdate').value = r.Birthdate||'';
+      document.getElementById('sf-contact').value = r.Contact||'';
+      document.getElementById('sf-email').value = r.Email||'';
+      document.getElementById('sf-address').value = r.Address||'';
+      setSelectVal('sf-year', String(r.YearLevel||1));
+      document.getElementById('sf-course').value = r.Course||'';
+      setSelectVal('sf-status', r.Status);
+    }
+  }
+  openModal('modal-student');
+}
+
+function setSelectVal(id, val) {
+  const sel = document.getElementById(id);
+  for (let o of sel.options) if (o.value===val||o.text===val) { sel.value=o.value; break; }
+}
+
+function saveStudent() {
+  const no = v('sf-no'), ln = v('sf-ln'), fn = v('sf-fn'), course = v('sf-course');
+  if (!no||!ln||!fn||!course) { document.getElementById('sf-err').textContent='Please fill in all required fields (*).'; return; }
+
+  const params = [no,ln,fn,v('sf-mn'),v('sf-gender'),v('sf-bdate'),v('sf-address'),v('sf-contact'),v('sf-email'),
+    parseInt(document.getElementById('sf-year').value)||1, course, v('sf-status')];
+
+  let res;
+  if (editStudentId) {
+    params.push(editStudentId);
+    res = run("UPDATE Students SET StudentNo=?,LastName=?,FirstName=?,MiddleName=?,Gender=?,Birthdate=?,Address=?,Contact=?,Email=?,YearLevel=?,Course=?,Status=? WHERE StudentID=?", params);
+  } else {
+    res = run("INSERT INTO Students(StudentNo,LastName,FirstName,MiddleName,Gender,Birthdate,Address,Contact,Email,YearLevel,Course,Status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", params);
+  }
+
+  if (res === true) {
+    closeModal('modal-student');
+    loadStudents();
+    toast(editStudentId ? 'Student updated.' : 'Student added.', 'success');
+  } else {
+    document.getElementById('sf-err').textContent = res.includes('UNIQUE') ? 'Student No. already exists.' : res;
+  }
+}
+
+function editSelectedStudent() {
+  if (!selectedStudentId) { toast('Select a student first.','info'); return; }
+  openStudentForm(selectedStudentId);
+}
+
+function deleteSelectedStudent() {
+  if (!selectedStudentId) { toast('Select a student first.','info'); return; }
+  const r = queryAll("SELECT LastName||', '||FirstName AS n FROM Students WHERE StudentID=?", [selectedStudentId])[0];
+  showConfirm(`Delete student '${r.n}'?`, 'This will also remove all their enrollment records.', () => {
+    run("DELETE FROM Enrollments WHERE StudentID=?", [selectedStudentId]);
+    run("DELETE FROM Students WHERE StudentID=?", [selectedStudentId]);
+    selectedStudentId = null;
+    loadStudents();
+    toast('Student deleted.', 'success');
+  }, 'btn-red');
+}
+
+// ══════════════════════════════════════════
+//  SUBJECTS
+// ══════════════════════════════════════════
+let selectedSubjectId = null;
+let editSubjectId = null;
+
+function loadSubjects() {
+  const s = document.getElementById('sub-search').value;
+  const like = `%${s}%`;
+  const rows = queryAll("SELECT SubjectID,SubjectCode,SubjectName,Units,YearLevel,Semester,Description FROM Subjects WHERE SubjectCode LIKE ? OR SubjectName LIKE ? ORDER BY SubjectCode", [like,like]);
+  document.getElementById('sub-count').textContent = `${rows.length} record(s)`;
+  const tb = document.getElementById('sub-tbody');
+  tb.innerHTML = rows.length ? rows.map(r => `
+    <tr data-id="${r.SubjectID}" onclick="selectRow(this,'subjects',${r.SubjectID})" ondblclick="editSelectedSubject()">
+      <td><span class="badge badge-blue">${r.SubjectCode}</span></td>
+      <td><b>${r.SubjectName}</b></td>
+      <td style="font-family:'JetBrains Mono',monospace">${r.Units}</td>
+      <td>${r.YearLevel}</td>
+      <td><span class="badge badge-amber">${r.Semester}</span></td>
+      <td style="color:var(--text3)">${r.Description||'—'}</td>
+    </tr>`).join('')
+    : `<tr><td colspan="6"><div class="no-data"><div class="no-data-icon">📚</div>No subjects found</div></td></tr>`;
+}
+
+function openSubjectForm(id = null) {
+  editSubjectId = id;
+  document.getElementById('sub-modal-title').textContent = id ? 'Edit Subject' : 'Add Subject';
+  ['subf-code','subf-name','subf-desc'].forEach(f => document.getElementById(f).value = '');
+  document.getElementById('subf-units').value = '3';
+  document.getElementById('subf-year').value = '1';
+  document.getElementById('subf-sem').value = '1st';
+  document.getElementById('subf-err').textContent = '';
+
+  if (id) {
+    const r = queryAll("SELECT * FROM Subjects WHERE SubjectID=?", [id])[0];
+    if (r) {
+      document.getElementById('subf-code').value = r.SubjectCode||'';
+      document.getElementById('subf-name').value = r.SubjectName||'';
+      document.getElementById('subf-units').value = String(r.Units||3);
+      document.getElementById('subf-year').value = String(r.YearLevel||1);
+      setSelectVal('subf-sem', r.Semester);
+      document.getElementById('subf-desc').value = r.Description||'';
+    }
+  }
+  openModal('modal-subject');
+}
+
+function saveSubject() {
+  const code = v('subf-code'), name = v('subf-name');
+  if (!code||!name) { document.getElementById('subf-err').textContent='Fill in required fields.'; return; }
+  const params = [code, name, parseInt(document.getElementById('subf-units').value)||3,
+    parseInt(document.getElementById('subf-year').value)||1,
+    document.getElementById('subf-sem').value, v('subf-desc')];
+  let res;
+  if (editSubjectId) {
+    params.push(editSubjectId);
+    res = run("UPDATE Subjects SET SubjectCode=?,SubjectName=?,Units=?,YearLevel=?,Semester=?,Description=? WHERE SubjectID=?", params);
+  } else {
+    res = run("INSERT INTO Subjects(SubjectCode,SubjectName,Units,YearLevel,Semester,Description) VALUES(?,?,?,?,?,?)", params);
+  }
+  if (res === true) { closeModal('modal-subject'); loadSubjects(); toast(editSubjectId?'Subject updated.':'Subject added.','success'); }
+  else document.getElementById('subf-err').textContent = res.includes('UNIQUE') ? 'Subject code already exists.' : res;
+}
+
+function editSelectedSubject() {
+  if (!selectedSubjectId) { toast('Select a subject first.','info'); return; }
+  openSubjectForm(selectedSubjectId);
+}
+
+function deleteSelectedSubject() {
+  if (!selectedSubjectId) { toast('Select a subject first.','info'); return; }
+  const r = queryAll("SELECT SubjectName FROM Subjects WHERE SubjectID=?", [selectedSubjectId])[0];
+  showConfirm(`Delete '${r.SubjectName}'?`, 'All enrollment records for this subject will also be removed.', () => {
+    run("DELETE FROM Enrollments WHERE SubjectID=?", [selectedSubjectId]);
+    run("DELETE FROM Subjects WHERE SubjectID=?", [selectedSubjectId]);
+    selectedSubjectId = null;
+    loadSubjects();
+    toast('Subject deleted.','success');
+  }, 'btn-red');
+}
+
+// ══════════════════════════════════════════
+//  ENROLLMENT
+// ══════════════════════════════════════════
+let selectedEnrollId = null;
+
+function initEnrFilters() {
+  const ss = document.getElementById('enr-student');
+  ss.innerHTML = '<option value="">All Students</option>';
+  queryAll("SELECT StudentID, StudentNo||' — '||LastName||', '||FirstName AS n FROM Students WHERE Status='Active' ORDER BY LastName")
+    .forEach(r => ss.innerHTML += `<option value="${r.StudentID}">${r.n}</option>`);
+
+  const sy = document.getElementById('enr-sy');
+  sy.innerHTML = '';
+  syOptions().forEach(o => sy.innerHTML += `<option>${o}</option>`);
+  sy.value = currentSY();
+}
+
+function loadEnrollments() {
+  const sid = document.getElementById('enr-student').value;
+  const sy = document.getElementById('enr-sy').value;
+  const sem = document.getElementById('enr-sem').value;
+
+  let where = 'WHERE 1=1';
+  const params = [];
+  if (sid) { where += ' AND e.StudentID=?'; params.push(parseInt(sid)); }
+  if (sy && sy !== 'All Years') { where += ' AND e.SchoolYear=?'; params.push(sy); }
+  if (sem && sem !== 'All') { where += ' AND e.Semester=?'; params.push(sem); }
+
+  const rows = queryAll(`
+    SELECT e.EnrollID, s.StudentNo, s.LastName||', '||s.FirstName AS sname,
+           sub.SubjectCode, sub.SubjectName, sub.Units,
+           e.SchoolYear, e.Semester, e.Status, e.DateEnrolled
+    FROM Enrollments e
+    JOIN Students s ON e.StudentID=s.StudentID
+    JOIN Subjects sub ON e.SubjectID=sub.SubjectID
+    ${where} ORDER BY e.DateEnrolled DESC, s.LastName`, params);
+
+  document.getElementById('enr-count').textContent = `${rows.length} record(s)`;
+  const tb = document.getElementById('enr-tbody');
+  tb.innerHTML = rows.length ? rows.map(r => `
+    <tr data-id="${r.EnrollID}" onclick="selectRow(this,'enrollment',${r.EnrollID})">
+      <td><code style="font-size:12px">${r.StudentNo}</code></td>
+      <td><b>${r.sname}</b></td>
+      <td><span class="badge badge-blue">${r.SubjectCode}</span></td>
+      <td>${r.SubjectName}</td>
+      <td style="font-family:'JetBrains Mono',monospace">${r.Units}</td>
+      <td>${r.SchoolYear}</td><td>${r.Semester}</td>
+      <td><span class="badge ${r.Status==='Enrolled'?'badge-green':'badge-gray'}">${r.Status}</span></td>
+      <td>${r.DateEnrolled||'—'}</td>
+    </tr>`).join('')
+    : `<tr><td colspan="9"><div class="no-data"><div class="no-data-icon">📋</div>No enrollment records found</div></td></tr>`;
+}
+
+function openEnrollForm() {
+  const ss = document.getElementById('enrf-student');
+  ss.innerHTML = '';
+  queryAll("SELECT StudentID, StudentNo||' — '||LastName||', '||FirstName AS n FROM Students WHERE Status='Active' ORDER BY LastName")
+    .forEach(r => ss.innerHTML += `<option value="${r.StudentID}">${r.n}</option>`);
+
+  document.getElementById('enrf-sy').value = currentSY();
+  document.getElementById('enrf-sem').value = '1st';
+  document.getElementById('enrf-err').textContent = '';
+
+  const cl = document.getElementById('enrf-subjects');
+  cl.innerHTML = '';
+  queryAll("SELECT SubjectID, SubjectCode||' — '||SubjectName||' ('||Units||' units)' AS d FROM Subjects ORDER BY SubjectCode")
+    .forEach(r => {
+      cl.innerHTML += `<label class="check-item"><input type="checkbox" value="${r.SubjectID}"> ${r.d}</label>`;
+    });
+
+  openModal('modal-enroll');
+}
+
+function saveEnrollment() {
+  const sid = document.getElementById('enrf-student').value;
+  const sy = document.getElementById('enrf-sy').value.trim();
+  const sem = document.getElementById('enrf-sem').value;
+  const checked = [...document.querySelectorAll('#enrf-subjects input:checked')];
+
+  if (!sid) { document.getElementById('enrf-err').textContent='Select a student.'; return; }
+  if (!sy) { document.getElementById('enrf-err').textContent='Enter school year.'; return; }
+  if (!checked.length) { document.getElementById('enrf-err').textContent='Select at least one subject.'; return; }
+
+  let ok = 0, dup = 0;
+  checked.forEach(c => {
+    const r = run("INSERT OR IGNORE INTO Enrollments(StudentID,SubjectID,SchoolYear,Semester) VALUES(?,?,?,?)",
+      [parseInt(sid), parseInt(c.value), sy, sem]);
+    if (r === true) {
+      const affected = queryScalar("SELECT changes()");
+      if (affected > 0) ok++; else dup++;
+    } else dup++;
+  });
+
+  closeModal('modal-enroll');
+  loadEnrollments();
+  toast(`Enrolled in ${ok} subject(s)${dup>0?`. ${dup} skipped (already enrolled).`:'.'}`,'success');
+}
+
+function dropEnrollment() {
+  if (!selectedEnrollId) { toast('Select an enrollment record first.','info'); return; }
+  const r = queryAll("SELECT s.LastName||', '||s.FirstName AS sn, sub.SubjectName as sub FROM Enrollments e JOIN Students s ON e.StudentID=s.StudentID JOIN Subjects sub ON e.SubjectID=sub.SubjectID WHERE EnrollID=?", [selectedEnrollId])[0];
+  if (!r) return;
+  showConfirm(`Drop '${r.sn}' from '${r.sub}'?`, 'This action cannot be undone.', () => {
+    run("DELETE FROM Enrollments WHERE EnrollID=?", [selectedEnrollId]);
+    selectedEnrollId = null;
+    loadEnrollments();
+    toast('Subject dropped.','success');
+  }, 'btn-red');
+}
+
+// ══════════════════════════════════════════
+//  GRADES
+// ══════════════════════════════════════════
+let gradeRows = [];
+
+function initGradeFilters() {
+  const ss = document.getElementById('grd-student');
+  ss.innerHTML = '<option value="">-- Select Student --</option>';
+  queryAll("SELECT StudentID, StudentNo||' — '||LastName||', '||FirstName AS n FROM Students WHERE Status='Active' ORDER BY LastName")
+    .forEach(r => ss.innerHTML += `<option value="${r.StudentID}">${r.n}</option>`);
+
+  const sy = document.getElementById('grd-sy');
+  sy.innerHTML = '';
+  syOptions().forEach(o => sy.innerHTML += `<option>${o}</option>`);
+  sy.value = 'All Years';
+  gradeRows = [];
+  document.getElementById('grd-tbody').innerHTML = '';
+  document.getElementById('gwa-bar').style.display = 'none';
+}
+
+function loadGrades() {
+  const sid = document.getElementById('grd-student').value;
+  document.getElementById('gwa-bar').style.display = 'none';
+  if (!sid) { document.getElementById('grd-tbody').innerHTML = ''; return; }
+
+  const sy = document.getElementById('grd-sy').value;
+  let where = 'e.StudentID=?';
+  const params = [parseInt(sid)];
+  if (sy && sy !== 'All Years') { where += ' AND e.SchoolYear=?'; params.push(sy); }
+
+  gradeRows = queryAll(`
+    SELECT e.EnrollID, sub.SubjectCode, sub.SubjectName, sub.Units,
+           e.SchoolYear, e.Semester, e.Grade, e.Status
+    FROM Enrollments e
+    JOIN Subjects sub ON e.SubjectID=sub.SubjectID
+    WHERE ${where} ORDER BY e.SchoolYear, e.Semester, sub.SubjectCode`, params);
+
+  renderGradeTable();
+  computeGWA();
+}
+
+function renderGradeTable() {
+  const tb = document.getElementById('grd-tbody');
+  tb.innerHTML = gradeRows.length ? gradeRows.map((r, i) => {
+    const g = r.Grade !== null && r.Grade !== undefined ? parseFloat(r.Grade) : null;
+    const gc = g !== null ? (g <= 3.0 ? 'grade-pass' : 'grade-fail') : '';
+    return `
+    <tr>
+      <td><span class="badge badge-blue">${r.SubjectCode}</span></td>
+      <td>${r.SubjectName}</td>
+      <td style="font-family:'JetBrains Mono',monospace">${r.Units}</td>
+      <td>${r.SchoolYear}</td><td>${r.Semester}</td>
+      <td><input class="grade-input ${gc}" id="gr-${i}" type="number" step="0.25" min="1" max="5" value="${g!==null?g:''}" placeholder="—" onchange="updateGradeRow(${i}, this.value)"></td>
+      <td><span class="badge ${r.Status==='Enrolled'?'badge-green':'badge-gray'}">${r.Status}</span></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="7"><div class="no-data"><div class="no-data-icon">📊</div>No enrollment records for this student</div></td></tr>`;
+}
+
+function updateGradeRow(i, val) {
+  gradeRows[i]._newGrade = val.trim();
+  // Update color
+  const inp = document.getElementById(`gr-${i}`);
+  const g = parseFloat(val);
+  inp.className = 'grade-input' + (!isNaN(g) ? (g<=3?'  grade-pass':' grade-fail') : '');
+  computeGWA();
+}
+
+function computeGWA() {
+  let tw = 0, tu = 0;
+  gradeRows.forEach((r, i) => {
+    const rawVal = document.getElementById(`gr-${i}`)?.value;
+    const g = parseFloat(rawVal);
+    if (!isNaN(g) && rawVal !== '') {
+      tw += g * r.Units;
+      tu += r.Units;
+    }
+  });
+  const bar = document.getElementById('gwa-bar');
+  if (tu > 0) {
+    bar.style.display = 'flex';
+    document.getElementById('gwa-val').textContent = (tw/tu).toFixed(2);
+    document.getElementById('gwa-units').textContent = `(${tu} units with grades)`;
+  } else { bar.style.display = 'none'; }
+}
+
+function saveGrades() {
+  let saved = 0;
+  let hasErr = false;
+  gradeRows.forEach((r, i) => {
+    const inp = document.getElementById(`gr-${i}`);
+    if (!inp) return;
+    const val = inp.value.trim();
+    if (val === '') {
+      run("UPDATE Enrollments SET Grade=NULL WHERE EnrollID=?", [r.EnrollID]);
+    } else {
+      const g = parseFloat(val);
+      if (isNaN(g) || g < 1 || g > 5) { hasErr = true; return; }
+      run("UPDATE Enrollments SET Grade=? WHERE EnrollID=?", [Math.round(g*100)/100, r.EnrollID]);
+    }
+    saved++;
+  });
+  if (hasErr) toast('Grade must be between 1.00 and 5.00.','error');
+  else { toast(`Grades saved for ${saved} record(s).`,'success'); loadGrades(); }
+}
+
+// ══════════════════════════════════════════
+//  REPORTS
+// ══════════════════════════════════════════
+function initReportFilters() {
+  ['rpt-sy'].forEach(id => {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    syOptions().forEach(o => el.innerHTML += `<option>${o}</option>`);
+    el.value = currentSY();
+  });
+}
+
+function generateReport() {
+  const type = parseInt(document.getElementById('rpt-type').value);
+  const sy = document.getElementById('rpt-sy').value;
+  const sem = document.getElementById('rpt-sem').value;
+
+  let params = [];
+  let syC = '', semC = '';
+  if (sy && sy !== 'All Years') { syC = ' AND e.SchoolYear=?'; params.push(sy); }
+  if (sem && sem !== 'All') { semC = ' AND e.Semester=?'; params.push(sem); }
+
+  let sql = '';
+  let cols = [];
+
+  switch (type) {
+    case 0:
+      sql = "SELECT StudentNo AS 'Student No.', LastName||', '||FirstName AS 'Name', Gender, YearLevel AS 'Year', Course, Contact, Email FROM Students WHERE Status='Active' ORDER BY LastName";
+      params = [];
+      cols = ["Student No.","Name","Gender","Year","Course","Contact","Email"];
+      break;
+    case 1:
+      sql = `SELECT sub.SubjectCode AS 'Code', sub.SubjectName AS 'Subject', s.StudentNo, s.LastName||', '||s.FirstName AS 'Student', e.SchoolYear AS 'SY', e.Semester AS 'Sem', e.Grade FROM Enrollments e JOIN Students s ON e.StudentID=s.StudentID JOIN Subjects sub ON e.SubjectID=sub.SubjectID WHERE 1=1${syC}${semC} ORDER BY sub.SubjectCode, s.LastName`;
+      cols = ["Code","Subject","StudentNo","Student","SY","Sem","Grade"];
+      break;
+    case 2:
+      sql = `SELECT s.StudentNo, s.LastName||', '||s.FirstName AS 'Student', s.Course, e.SchoolYear AS 'SY', e.Semester AS 'Sem', COUNT(e.EnrollID) AS 'Subjects', SUM(sub.Units) AS 'Total Units', ROUND(SUM(CASE WHEN e.Grade IS NOT NULL THEN e.Grade*sub.Units ELSE 0 END)/NULLIF(SUM(CASE WHEN e.Grade IS NOT NULL THEN sub.Units ELSE 0 END),0),2) AS 'GWA' FROM Enrollments e JOIN Students s ON e.StudentID=s.StudentID JOIN Subjects sub ON e.SubjectID=sub.SubjectID WHERE 1=1${syC}${semC} GROUP BY s.StudentID,e.SchoolYear,e.Semester ORDER BY s.LastName`;
+      cols = ["StudentNo","Student","Course","SY","Sem","Subjects","Total Units","GWA"];
+      break;
+    case 3:
+      sql = "SELECT SubjectCode AS 'Code', SubjectName AS 'Subject Name', Units, YearLevel AS 'Year', Semester, Description FROM Subjects ORDER BY SubjectCode";
+      params = [];
+      cols = ["Code","Subject Name","Units","Year","Semester","Description"];
+      break;
+    case 4:
+      sql = "SELECT Course, COUNT(*) AS 'Total Students', SUM(CASE WHEN Status='Active' THEN 1 ELSE 0 END) AS 'Active' FROM Students GROUP BY Course ORDER BY Course";
+      params = [];
+      cols = ["Course","Total Students","Active"];
+      break;
+  }
+
+  const rows = queryAll(sql, params);
+  document.getElementById('rpt-count').textContent = `${rows.length} records`;
+
+  const actualCols = rows.length ? Object.keys(rows[0]) : cols;
+  let html = `<table><thead><tr>${actualCols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+
+  if (rows.length) {
+    html += rows.map(r => `<tr>${actualCols.map(c => {
+      const val = r[c];
+      if (c==='Code'||c==='SubjectCode') return `<td><span class="badge badge-blue">${val||'—'}</span></td>`;
+      if (c==='Grade'||c==='GWA') {
+        if (val===null||val===undefined) return `<td style="color:var(--text3)">—</td>`;
+        const g = parseFloat(val);
+        return `<td class="${g<=3?'grade-pass':'grade-fail'}" style="font-family:'JetBrains Mono',monospace">${val}</td>`;
+      }
+      return `<td>${val!==null&&val!==undefined?val:'—'}</td>`;
+    }).join('')}</tr>`).join('');
+  } else {
+    html += `<tr><td colspan="${actualCols.length}"><div class="no-data"><div class="no-data-icon">📊</div>No data for selected filters</div></td></tr>`;
+  }
+
+  html += '</tbody></table>';
+  document.getElementById('rpt-table-wrap').innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+//  MODAL HELPERS
+// ══════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
+});
+
+// ══════════════════════════════════════════
+//  CONFIRM DIALOG
+// ══════════════════════════════════════════
+let _confirmCb = null;
+
+function showConfirm(title, msg, cb, btnClass = 'btn-red') {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-ok-btn').className = `btn ${btnClass}`;
+  _confirmCb = cb;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function confirmResolve(ok) {
+  document.getElementById('confirm-overlay').classList.remove('open');
+  if (ok && _confirmCb) _confirmCb();
+  _confirmCb = null;
+}
+
+// ══════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+// ══════════════════════════════════════════
+//  UTILITY
+// ══════════════════════════════════════════
+function v(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+// Date
+function formatDate() {
+  return new Date().toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' });
+}
+document.getElementById('topDate').textContent = formatDate();
+
+// ══════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════
+(async () => {
+  await initDB();
+  refreshDashboard();
+})();
+</script>
+</body>
+</html>
