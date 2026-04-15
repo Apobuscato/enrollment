@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel Bulk Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0f11;
+    --surface: #16181c;
+    --surface-2: #1e2128;
+    --surface-3: #252830;
+    --border: #2a2d35;
+    --border-2: #363a45;
+    --text: #eef0f4;
+    --text-muted: #7a7f8e;
+    --text-dim: #4a4f5e;
+    --accent: #4e8cff;
+    --accent-dim: #1c3566;
+    --accent-glow: #4e8cff22;
+    --green: #3ecf8e;
+    --green-dim: #0d3324;
+    --red: #f87171;
+    --amber: #fbbf24;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --radius-lg: 16px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* Layout */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--accent), #7b5bf6);
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 1px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .sidebar-steps { padding: 0 16px; flex: 1; }
+
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 4px;
+    cursor: default;
+    transition: background 0.15s;
+  }
+
+  .step-item.active { background: var(--surface-2); }
+
+  .step-bubble {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .step-item.active .step-bubble {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  .step-item.done .step-bubble {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-dim);
+  }
+
+  .step-info { flex: 1; padding-top: 4px; }
+
+  .step-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: color 0.15s;
+  }
+
+  .step-item.active .step-title,
+  .step-item.done .step-title { color: var(--text); }
+
+  .step-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  .step-connector {
+    width: 1.5px;
+    height: 16px;
+    background: var(--border);
+    margin: 2px 0 2px 22px;
+  }
+
+  .sidebar-files {
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+
+  .sidebar-files-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .file-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    margin-bottom: 5px;
+    animation: slideIn 0.2s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .file-pill-name {
+    font-size: 12px;
+    color: var(--text);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .file-pill-size {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .file-pill-del {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+    transition: background 0.1s, color 0.1s;
+  }
+
+  .file-pill-del:hover { background: #3d1a1a; color: var(--red); }
+
+  /* Main */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 40px 48px;
+    max-width: calc(100% - 260px);
+  }
+
+  .page-header {
+    margin-bottom: 36px;
+  }
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.03em;
+  }
+
+  .page-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  /* Upload Zone */
+  .upload-zone {
+    border: 1.5px dashed var(--border-2);
+    border-radius: var(--radius-lg);
+    padding: 48px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface);
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .upload-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .upload-zone:hover, .upload-zone.drag {
+    border-color: var(--accent);
+    background: var(--surface-2);
+  }
+
+  .upload-zone:hover::before, .upload-zone.drag::before { opacity: 1; }
+
+  .upload-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .upload-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .upload-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    position: relative;
+    z-index: 1;
+  }
+
+  .upload-hint {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 5px 14px;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    position: relative;
+    z-index: 1;
+  }
+
+  #fileInput { display: none; }
+
+  /* Columns Section */
+  .section { margin-bottom: 32px; }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .section-badge {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    padding: 3px 8px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-radius: 4px;
+  }
+
+  .cols-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+  }
+
+  .col-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 13px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-muted);
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .col-btn:hover { border-color: var(--border-2); color: var(--text); background: var(--surface-2); }
+
+  .col-btn.selected {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .col-check {
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    border: 1.5px solid currentColor;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+  }
+
+  /* Edit Rules */
+  .rules-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .rules-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rules-header-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .selected-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .stag {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px 3px 10px;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .stag button {
+    border: none;
+    background: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.7;
+  }
+
+  .stag button:hover { opacity: 1; }
+
+  .rules-body { padding: 16px 20px; }
+
+  .rule-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 10px;
+    align-items: end;
+    margin-bottom: 10px;
+    animation: slideIn 0.18s ease;
+  }
+
+  .field-group label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 5px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .field-group select,
+  .field-group input {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .field-group select:focus,
+  .field-group input:focus { border-color: var(--accent); }
+
+  .field-group select option { background: var(--surface-2); }
+
+  .rule-del {
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    margin-bottom: 1px;
+  }
+
+  .rule-del:hover { border-color: var(--red); color: var(--red); background: #3d1a1a; }
+
+  .add-rule-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1.5px dashed var(--border-2);
+    border-radius: var(--radius-sm);
+    padding: 9px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    width: 100%;
+    justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    margin-top: 4px;
+  }
+
+  .add-rule-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Preview */
+  .preview-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .preview-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .preview-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  .preview-title { font-size: 13px; font-weight: 500; color: var(--text); }
+
+  .preview-sub { font-size: 12px; color: var(--text-dim); margin-left: auto; font-family: 'DM Mono', monospace; }
+
+  .table-scroll { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  th.selected-th { color: var(--accent); }
+
+  td {
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    font-family: 'DM Mono', monospace;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface-2); }
+
+  td.modified { color: var(--accent); }
+
+  /* Action Bar */
+  .action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 260px;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 16px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .action-info {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .action-info strong { color: var(--text); }
+
+  .action-btns { display: flex; gap: 10px; }
+
+  .btn {
+    padding: 9px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border-2);
+    color: var(--text-muted);
+  }
+
+  .btn-ghost:hover { border-color: var(--border), ; color: var(--text); background: var(--surface-2); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: #3d7ef8; }
+  .btn-primary:disabled { background: var(--surface-3); color: var(--text-dim); cursor: not-allowed; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 80px;
+    right: 32px;
+    padding: 12px 18px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 999;
+    animation: toastIn 0.25s ease;
+    max-width: 320px;
+  }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .toast.success { background: var(--green-dim); border: 1px solid var(--green); color: var(--green); }
+  .toast.info { background: var(--accent-dim); border: 1px solid var(--accent); color: var(--accent); }
+  .toast.error { background: #3d1a1a; border: 1px solid var(--red); color: var(--red); }
+
+  /* Responsive helper */
+  .hidden { display: none !important; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 40px; color: var(--text-dim); font-size: 13px; }
+  .empty-icon { font-size: 28px; margin-bottom: 10px; }
+
+  /* Main padded bottom for action bar */
+  .main { padding-bottom: 80px; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">⚡</div>
+        <div>
+          <div class="logo-text">BulkXLS</div>
+          <div class="logo-sub">excel batch editor</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-steps">
+      <div class="step-item active" id="si1">
+        <div class="step-bubble">1</div>
+        <div class="step-info">
+          <div class="step-title">Mag-upload ng files</div>
+          <div class="step-desc">Pumili ng isa o maraming .xlsx na may parehong format</div>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-item" id="si2">
+        <div class="step-bubble">2</div>
+        <div class="step-info">
+          <div class="step-title">Pumili ng column</div>
+          <div class="step-desc">I-click ang mga column na gusto mong baguhin</div>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-item" id="si3">
+        <div class="step-bubble">3</div>
+        <div class="step-info">
+          <div class="step-title">Itakda ang pagbabago</div>
+          <div class="step-desc">Lagyan ng bagong value bawat column</div>
+        </div>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step-item" id="si4">
+        <div class="step-bubble">4</div>
+        <div class="step-info">
+          <div class="step-title">I-download</div>
+          <div class="step-desc">I-export ang lahat ng na-edit na files</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-files" id="sidebarFiles" style="display:none;">
+      <div class="sidebar-files-label">Na-upload</div>
+      <div id="filePills"></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">Excel Bulk Editor</h1>
+      <p class="page-sub">Mag-upload ng maraming Excel files na may parehong structure, piliin ang mga column, at i-edit nang sabay-sabay.</p>
+    </div>
+
+    <!-- Upload -->
+    <div class="upload-zone" id="uploadZone">
+      <div class="upload-icon">📊</div>
+      <div class="upload-title">I-drag ang mga Excel files dito</div>
+      <div class="upload-sub">o mag-click para pumili mula sa iyong computer</div>
+      <div class="upload-hint">.xlsx &nbsp;·&nbsp; .xls &nbsp;·&nbsp; .csv</div>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" multiple>
+    </div>
+
+    <!-- Columns -->
+    <div class="section hidden" id="colsSection">
+      <div class="section-head">
+        <div class="section-title">Mga Column</div>
+        <div class="section-badge" id="selectedCount">0 napili</div>
+      </div>
+      <div class="cols-grid" id="colsGrid"></div>
+    </div>
+
+    <!-- Edit Rules -->
+    <div class="section hidden" id="editSection">
+      <div class="rules-box">
+        <div class="rules-header">
+          <span class="rules-header-title">Mga Pagbabago</span>
+          <div class="selected-tags" id="selectedTags"></div>
+        </div>
+        <div class="rules-body">
+          <div id="ruleRows"></div>
+          <button class="add-rule-btn" id="addRuleBtn">+ Magdagdag ng panuntunan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="section hidden" id="previewSection">
+      <div class="preview-wrap">
+        <div class="preview-header">
+          <div class="preview-dot"></div>
+          <div class="preview-title">Live preview</div>
+          <div class="preview-sub" id="previewSub">unang 5 rows</div>
+        </div>
+        <div class="table-scroll">
+          <table id="previewTable"></table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Action Bar -->
+<div class="action-bar hidden" id="actionBar">
+  <div class="action-info">
+    <span id="actionInfo">Walang napiling column</span>
+  </div>
+  <div class="action-btns">
+    <button class="btn btn-ghost" id="resetBtn">I-reset</button>
+    <button class="btn btn-primary" id="applyBtn" disabled>⬇ I-download ang edited files</button>
+  </div>
+</div>
+
+<script>
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const colsSection = document.getElementById('colsSection');
+const colsGrid = document.getElementById('colsGrid');
+const editSection = document.getElementById('editSection');
+const selectedTags = document.getElementById('selectedTags');
+const ruleRows = document.getElementById('ruleRows');
+const addRuleBtn = document.getElementById('addRuleBtn');
+const previewSection = document.getElementById('previewSection');
+const previewTable = document.getElementById('previewTable');
+const actionBar = document.getElementById('actionBar');
+const applyBtn = document.getElementById('applyBtn');
+const sidebarFiles = document.getElementById('sidebarFiles');
+const filePills = document.getElementById('filePills');
+const selectedCount = document.getElementById('selectedCount');
+const actionInfo = document.getElementById('actionInfo');
+
+let files = [];
+let workbooks = [];
+let columns = [];
+let selectedCols = new Set();
+let rules = [];
+
+// Upload handlers
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag'); handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+function handleFiles(newFiles) {
+  const valid = Array.from(newFiles).filter(f => /\.(xlsx|xls|csv)$/i.test(f.name));
+  if (!valid.length) { toast('Tanggap lang ang .xlsx, .xls, o .csv na files.', 'error'); return; }
+  valid.forEach(f => { if (!files.find(u => u.name === f.name)) files.push(f); });
+  parseAll();
+  setStep(2);
+}
+
+function parseAll() {
+  workbooks = new Array(files.length);
+  let done = 0;
+  files.forEach((f, i) => {
+    const r = new FileReader();
+    r.onload = e => {
+      workbooks[i] = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+      done++;
+      if (done === files.length) { detectColumns(); renderSidebar(); }
+    };
+    r.readAsArrayBuffer(f);
+  });
+}
+
+function renderSidebar() {
+  if (!files.length) { sidebarFiles.style.display = 'none'; return; }
+  sidebarFiles.style.display = '';
+  filePills.innerHTML = files.map((f, i) => `
+    <div class="file-pill">
+      <span class="file-pill-name" title="${f.name}">${f.name}</span>
+      <span class="file-pill-size">${(f.size/1024).toFixed(0)}k</span>
+      <button class="file-pill-del" onclick="removeFile(${i})">×</button>
+    </div>`).join('');
+}
+
+function removeFile(i) {
+  files.splice(i, 1); workbooks.splice(i, 1);
+  if (!files.length) { columns = []; selectedCols = new Set(); rules = []; resetUI(); }
+  else { detectColumns(); }
+  renderSidebar();
+}
+
+function detectColumns() {
+  if (!workbooks[0]) return;
+  const wb = workbooks[0];
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+  columns = (data[0] || []).map(String);
+  renderColumns();
+  renderPreview();
+  actionBar.classList.remove('hidden');
+}
+
+function renderColumns() {
+  colsSection.classList.remove('hidden');
+  colsGrid.innerHTML = columns.map(c => `
+    <button class="col-btn ${selectedCols.has(c) ? 'selected' : ''}" onclick="toggleCol('${escQ(c)}')">
+      <div class="col-check">${selectedCols.has(c) ? '✓' : ''}</div>
+      ${c}
+    </button>`).join('');
+  selectedCount.textContent = selectedCols.size + ' napili';
+  renderEditSection();
+  updateActionBar();
+}
+
+function escQ(s) { return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+
+function toggleCol(c) {
+  selectedCols.has(c) ? selectedCols.delete(c) : selectedCols.add(c);
+  renderColumns();
+  renderPreview();
+  if (selectedCols.size) setStep(3);
+}
+
+function renderEditSection() {
+  if (!selectedCols.size) { editSection.classList.add('hidden'); return; }
+  editSection.classList.remove('hidden');
+  selectedTags.innerHTML = [...selectedCols].map(c =>
+    `<div class="stag">${c}<button onclick="toggleCol('${escQ(c)}')">×</button></div>`).join('');
+  renderRuleRows();
+}
+
+function renderRuleRows() {
+  const colOpts = [...selectedCols].map(c => `<option value="${c}">${c}</option>`).join('');
+  ruleRows.innerHTML = rules.map((r, i) => `
+    <div class="rule-row">
+      <div class="field-group">
+        <label>Column</label>
+        <select onchange="rules[${i}].col=this.value; renderPreview();">
+          ${[...selectedCols].map(c => `<option value="${c}" ${r.col===c?'selected':''}>${c}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Palitan ng value</label>
+        <input type="text" value="${r.value.replace(/"/g,'&quot;')}" placeholder="Bagong value..."
+          oninput="rules[${i}].value=this.value; renderPreview();">
+      </div>
+      <button class="rule-del" onclick="rules.splice(${i},1); renderRuleRows(); renderPreview();" title="Tanggalin">×</button>
+    </div>`).join('');
+}
+
+addRuleBtn.addEventListener('click', () => {
+  const col = [...selectedCols][0] || '';
+  rules.push({ col, value: '' });
+  renderRuleRows();
+});
+
+function renderPreview() {
+  if (!workbooks[0]) return;
+  previewSection.classList.remove('hidden');
+  const wb = workbooks[0];
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+  const headers = data[0] || [];
+  const rows = data.slice(1, 6);
+
+  let thead = '<thead><tr>' + headers.map(h => {
+    const isSel = selectedCols.has(String(h));
+    return `<th class="${isSel ? 'selected-th' : ''}">${h}${isSel ? ' ●' : ''}</th>`;
+  }).join('') + '</tr></thead>';
+
+  let tbody = '<tbody>' + rows.map(row =>
+    '<tr>' + headers.map((h, ci) => {
+      const rule = rules.find(r => r.col === String(h));
+      const isModified = rule && rule.value !== '';
+      const val = isModified ? rule.value : (row[ci] !== undefined ? row[ci] : '');
+      return `<td class="${isModified ? 'modified' : ''}">${val}</td>`;
+    }).join('') + '</tr>'
+  ).join('') + '</tbody>';
+
+  previewTable.innerHTML = thead + tbody;
+  document.getElementById('previewSub').textContent = `${workbooks[0].SheetNames[0]} · unang 5 rows`;
+}
+
+function updateActionBar() {
+  if (selectedCols.size) {
+    actionInfo.innerHTML = `<strong>${files.length}</strong> file${files.length>1?'s':''}, <strong>${selectedCols.size}</strong> column napili`;
+    applyBtn.disabled = false;
+  } else {
+    actionInfo.textContent = 'Pumili muna ng column';
+    applyBtn.disabled = true;
+  }
+}
+
+applyBtn.addEventListener('click', () => {
+  if (!rules.length) { toast('Magdagdag muna ng kahit isang panuntunan.', 'info'); return; }
+  setStep(4);
+  workbooks.forEach((wb, fi) => {
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+    const headers = data[0] || [];
+    const newData = data.map((row, ri) => {
+      if (ri === 0) return row;
+      return headers.map((h, ci) => {
+        const rule = rules.find(r => r.col === String(h));
+        return rule && rule.value !== '' ? rule.value : (row[ci] !== undefined ? row[ci] : '');
+      });
+    });
+    const newWs = XLSX.utils.aoa_to_sheet(newData);
+    const newWb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(newWb, newWs, wb.SheetNames[0]);
+    const baseName = files[fi].name.replace(/\.(xlsx|xls|csv)$/i, '');
+    XLSX.writeFile(newWb, `${baseName}_edited.xlsx`);
+  });
+  toast(`Na-download na ang ${workbooks.length} file${workbooks.length>1?'s':''} ✓`, 'success');
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  files = []; workbooks = []; columns = []; selectedCols = new Set(); rules = [];
+  resetUI(); fileInput.value = '';
+});
+
+function resetUI() {
+  colsSection.classList.add('hidden');
+  editSection.classList.add('hidden');
+  previewSection.classList.add('hidden');
+  actionBar.classList.add('hidden');
+  sidebarFiles.style.display = 'none';
+  setStep(1);
+}
+
+function setStep(n) {
+  [1,2,3,4].forEach(i => {
+    const el = document.getElementById('si'+i);
+    el.classList.remove('active','done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  });
+}
+
+function toast(msg, type='info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+</script>
+</body>
+</html>
