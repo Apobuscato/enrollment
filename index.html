@@ -3,1624 +3,1599 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EduEnroll — Enrollment Management System</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>EduEnroll — Enrollment System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --navy: #0f172a;
-  --navy2: #1e293b;
-  --navy3: #2d3a52;
-  --blue: #1e3a8a;
-  --blue2: #3b82f6;
-  --blue-light: #dbeafe;
-  --blue-xlight: #eff6ff;
-  --green: #059669;
-  --green-light: #d1fae5;
-  --red: #dc2626;
-  --red-light: #fee2e2;
-  --amber: #d97706;
-  --amber-light: #fef3c7;
-  --purple: #7c3aed;
-  --purple-light: #ede9fe;
-  --gray: #f8fafc;
-  --gray2: #f1f5f9;
-  --gray3: #e2e8f0;
-  --gray4: #cbd5e1;
-  --text: #0f172a;
-  --text2: #475569;
-  --text3: #94a3b8;
-  --white: #ffffff;
-  --sidebar-w: 230px;
-  --header-h: 62px;
-  --radius: 10px;
-  --radius-sm: 6px;
-  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
-  --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
-}
-
-body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--gray); color: var(--text); height: 100vh; overflow: hidden; display: flex; }
-
-/* ── SIDEBAR ── */
-.sidebar {
-  width: var(--sidebar-w);
-  background: var(--navy);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  height: 100vh;
-  position: fixed;
-  top: 0; left: 0;
-  z-index: 200;
-}
-
-.sidebar-logo {
-  height: 70px;
-  background: var(--blue);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.logo-icon { font-size: 24px; }
-.logo-text { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -.03em; }
-
-.sidebar-nav { flex: 1; padding: 16px 10px; overflow-y: auto; }
-
-.nav-section-label {
-  font-size: 9.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--text3);
-  padding: 0 8px;
-  margin: 16px 0 6px;
-}
-
-.nav-section-label:first-child { margin-top: 0; }
-
-.nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 12px;
-  border: none;
-  background: transparent;
-  border-radius: var(--radius-sm);
-  color: #94a3b8;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13.5px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: left;
-  transition: all .15s;
-  margin-bottom: 2px;
-}
-
-.nav-btn:hover { background: var(--navy2); color: #fff; }
-.nav-btn.active { background: var(--blue2); color: #fff; }
-.nav-btn .nav-icon { font-size: 15px; flex-shrink: 0; }
-
-.sidebar-footer {
-  padding: 14px;
-  border-top: 1px solid #1e293b;
-  font-size: 11px;
-  color: var(--text3);
-  text-align: center;
-  flex-shrink: 0;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* ── MAIN ── */
-.main-wrap {
-  margin-left: var(--sidebar-w);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.topbar {
-  height: var(--header-h);
-  background: var(--white);
-  border-bottom: 1px solid var(--gray3);
-  display: flex;
-  align-items: center;
-  padding: 0 28px;
-  gap: 16px;
-  flex-shrink: 0;
-}
-
-.topbar-title { font-size: 18px; font-weight: 700; color: var(--blue); letter-spacing: -.02em; flex: 1; }
-.topbar-date { font-size: 12.5px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
-
-.content-area {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px 28px;
-}
-
-/* ── PAGES ── */
-.page { display: none; animation: fadeIn .2s ease; }
-.page.active { display: block; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ── CARDS ── */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-
-.stat-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  box-shadow: var(--shadow);
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  border-left: 4px solid transparent;
-  transition: box-shadow .2s;
-}
-
-.stat-card:hover { box-shadow: var(--shadow-md); }
-.stat-card.blue { border-color: var(--blue); }
-.stat-card.green { border-color: var(--green); }
-.stat-card.purple { border-color: var(--purple); }
-.stat-card.red { border-color: var(--red); }
-
-.stat-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.stat-card.blue .stat-icon { background: var(--blue-light); }
-.stat-card.green .stat-icon { background: var(--green-light); }
-.stat-card.purple .stat-icon { background: var(--purple-light); }
-.stat-card.red .stat-icon { background: var(--red-light); }
-
-.stat-info { flex: 1; }
-
-.stat-value {
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 1;
-  margin-bottom: 4px;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.stat-card.blue .stat-value { color: var(--blue); }
-.stat-card.green .stat-value { color: var(--green); }
-.stat-card.purple .stat-value { color: var(--purple); }
-.stat-card.red .stat-value { color: var(--red); }
-
-.stat-label { font-size: 12px; color: var(--text3); font-weight: 500; }
-
-/* ── PANELS ── */
-.panel {
-  background: var(--white);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-
-.panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--gray3);
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.panel-title { font-size: 14px; font-weight: 700; color: var(--text); }
-
-.panel-body { padding: 0; }
-
-/* ── TOOLBAR ── */
-.toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-
-.search-box {
-  position: relative;
-  flex: 1;
-  min-width: 180px;
-  max-width: 260px;
-}
-
-.search-box input {
-  width: 100%;
-  padding: 7px 12px 7px 32px;
-  border: 1px solid var(--gray3);
-  border-radius: var(--radius-sm);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13px;
-  color: var(--text);
-  background: var(--gray);
-  outline: none;
-  transition: border-color .15s;
-}
-
-.search-box input:focus { border-color: var(--blue2); background: #fff; }
-.search-box::before { content: '🔍'; position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 12px; pointer-events: none; }
-
-.sel {
-  padding: 7px 10px;
-  border: 1px solid var(--gray3);
-  border-radius: var(--radius-sm);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 12.5px;
-  color: var(--text);
-  background: var(--gray);
-  outline: none;
-  cursor: pointer;
-}
-
-.sel:focus { border-color: var(--blue2); }
-
-/* ── BUTTONS ── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 7px 14px;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .15s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.btn:active { transform: scale(.97); }
-
-.btn-blue { background: var(--blue); color: #fff; }
-.btn-blue:hover { background: #1d4ed8; }
-
-.btn-green { background: var(--green); color: #fff; }
-.btn-green:hover { background: #047857; }
-
-.btn-red { background: var(--red); color: #fff; }
-.btn-red:hover { background: #b91c1c; }
-
-.btn-gray { background: #64748b; color: #fff; }
-.btn-gray:hover { background: #475569; }
-
-.btn-outline { background: #fff; color: var(--text2); border: 1px solid var(--gray3); }
-.btn-outline:hover { background: var(--gray); border-color: var(--gray4); }
-
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.badge-green { background: var(--green-light); color: #065f46; }
-.badge-red { background: var(--red-light); color: #991b1b; }
-.badge-gray { background: var(--gray2); color: var(--text2); }
-.badge-blue { background: var(--blue-light); color: var(--blue); }
-.badge-amber { background: var(--amber-light); color: #92400e; }
-
-/* ── TABLE ── */
-.table-wrap { overflow-x: auto; }
-
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-
-thead th {
-  padding: 10px 14px;
-  background: var(--blue);
-  color: #fff;
-  font-weight: 600;
-  font-size: 12px;
-  text-align: left;
-  white-space: nowrap;
-  letter-spacing: .01em;
-}
-
-thead th:first-child { border-radius: 0; }
-
-tbody tr { transition: background .1s; cursor: pointer; }
-tbody tr:hover { background: var(--blue-xlight); }
-tbody tr.selected { background: var(--blue-light) !important; }
-tbody tr:nth-child(even) { background: var(--gray); }
-tbody tr:nth-child(even):hover { background: var(--blue-xlight); }
-tbody tr.selected:nth-child(even) { background: var(--blue-light) !important; }
-
-tbody td {
-  padding: 9px 14px;
-  border-bottom: 1px solid var(--gray3);
-  color: var(--text2);
-  white-space: nowrap;
-}
-
-tbody tr:last-child td { border-bottom: none; }
-
-.no-data { text-align: center; padding: 48px 20px; color: var(--text3); font-size: 13px; }
-.no-data-icon { font-size: 32px; margin-bottom: 8px; }
-
-/* ── MODAL ── */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(15,23,42,.5);
-  z-index: 500;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(2px);
-  padding: 20px;
-}
-
-.modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
-
-.modal {
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,.2);
-}
-
-.modal-lg { max-width: 600px; }
-
-.modal-header {
-  background: var(--blue);
-  padding: 16px 22px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modal-title { font-size: 15px; font-weight: 700; color: #fff; }
-
-.modal-close {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,.2);
-  color: #fff;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background .15s;
-}
-
-.modal-close:hover { background: rgba(255,255,255,.3); }
-
-.modal-body { padding: 22px; }
-
-.modal-footer {
-  padding: 14px 22px;
-  background: var(--gray);
-  border-top: 1px solid var(--gray3);
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-/* ── FORM ── */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.form-grid .full { grid-column: 1 / -1; }
-
-.field { display: flex; flex-direction: column; gap: 5px; }
-.field label { font-size: 12px; font-weight: 600; color: var(--text2); }
-
-.field input,
-.field select,
-.field textarea {
-  padding: 8px 11px;
-  border: 1.5px solid var(--gray3);
-  border-radius: var(--radius-sm);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13px;
-  color: var(--text);
-  outline: none;
-  transition: border-color .15s;
-  background: #fff;
-}
-
-.field input:focus,
-.field select:focus,
-.field textarea:focus { border-color: var(--blue2); }
-
-.field .required::after { content: ' *'; color: var(--red); }
-
-.field-err { font-size: 11px; color: var(--red); }
-
-/* ── CHECKLIST ── */
-.check-list {
-  border: 1.5px solid var(--gray3);
-  border-radius: var(--radius-sm);
-  max-height: 220px;
-  overflow-y: auto;
-  background: var(--gray);
-}
-
-.check-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  font-size: 13px;
-  color: var(--text2);
-  cursor: pointer;
-  transition: background .1s;
-  border-bottom: 1px solid var(--gray3);
-}
-
-.check-item:last-child { border-bottom: none; }
-.check-item:hover { background: var(--blue-xlight); }
-.check-item input[type="checkbox"] { accent-color: var(--blue); width: 14px; height: 14px; cursor: pointer; }
-.check-item.checked { background: var(--blue-xlight); color: var(--blue); font-weight: 500; }
-
-/* ── GWA BADGE ── */
-.gwa-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 20px;
-  background: var(--blue-xlight);
-  border-bottom: 1px solid var(--gray3);
-  font-size: 13px;
-}
-
-.gwa-val { font-size: 18px; font-weight: 700; color: var(--blue); font-family: 'JetBrains Mono', monospace; }
-
-/* ── INFO ROW ── */
-.info-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 20px;
-  border-bottom: 1px solid var(--gray3);
-  font-size: 12.5px;
-  color: var(--text3);
-  background: var(--gray);
-}
-
-/* ── TOAST ── */
-.toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-
-.toast {
-  padding: 11px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: var(--shadow-md);
-  animation: toastIn .25s ease;
-  min-width: 220px;
-  max-width: 320px;
-}
-
-@keyframes toastIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
-
-.toast.success { background: #065f46; color: #fff; }
-.toast.error { background: #991b1b; color: #fff; }
-.toast.info { background: var(--blue); color: #fff; }
-
-/* ── CONFIRM DIALOG ── */
-.confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 800; display: none; align-items: center; justify-content: center; }
-.confirm-overlay.open { display: flex; }
-.confirm-box { background: #fff; border-radius: 12px; padding: 24px; width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,.2); text-align: center; }
-.confirm-icon { font-size: 36px; margin-bottom: 12px; }
-.confirm-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-.confirm-msg { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.5; }
-.confirm-btns { display: flex; justify-content: center; gap: 10px; }
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--gray4); border-radius: 3px; }
-
-/* ── EDITABLE GRADE INPUT ── */
-.grade-input {
-  width: 60px;
-  padding: 4px 6px;
-  border: 1px solid var(--gray3);
-  border-radius: 4px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12.5px;
-  text-align: center;
-  outline: none;
-  background: #fff;
-}
-
-.grade-input:focus { border-color: var(--blue2); }
-.grade-pass { color: var(--green); font-weight: 600; }
-.grade-fail { color: var(--red); font-weight: 600; }
-
-/* ── REPORTS ── */
-.report-info { font-size: 12px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+  :root {
+    --navy:   #0f1e3c;
+    --navy2:  #1a2f5a;
+    --gold:   #e4a23a;
+    --gold2:  #f5c76a;
+    --cream:  #f9f6f0;
+    --white:  #ffffff;
+    --gray:   #8a96a8;
+    --light:  #eef1f7;
+    --danger: #dc3545;
+    --success:#198754;
+    --warn:   #e4a23a;
+    --text:   #1a2035;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(15,30,60,0.10);
+    --shadow2: 0 8px 40px rgba(15,30,60,0.18);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── LOGIN ─────────────────────────────────────────────── */
+  #loginPage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 60%, #2a4080 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  #loginPage::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(228,162,58,0.15), transparent 70%);
+    top: -150px; right: -150px;
+    pointer-events: none;
+  }
+  #loginPage::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(228,162,58,0.08), transparent 70%);
+    bottom: -100px; left: -100px;
+    pointer-events: none;
+  }
+  .login-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 48px 44px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: var(--shadow2);
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.5s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(24px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .login-logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .login-logo .logo-icon {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--navy), var(--navy2));
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 24px rgba(15,30,60,0.25);
+  }
+  .login-logo h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--navy);
+    letter-spacing: -0.5px;
+  }
+  .login-logo p {
+    font-size: 13px;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+  .form-group {
+    margin-bottom: 18px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 7px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid #dde2ed;
+    border-radius: 9px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(15,30,60,0.08);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 20px;
+    border: none;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--navy), var(--navy2));
+    color: var(--white);
+    width: 100%;
+    justify-content: center;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(15,30,60,0.22);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(15,30,60,0.30); }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: var(--navy);
+    font-weight: 600;
+    box-shadow: 0 3px 12px rgba(228,162,58,0.25);
+  }
+  .btn-gold:hover { transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent;
+    color: var(--navy);
+    border: 1.5px solid #dde2ed;
+  }
+  .btn-outline:hover { background: var(--light); }
+  .btn-danger { background: #fff0f0; color: var(--danger); border: 1.5px solid #fcc; }
+  .btn-danger:hover { background: #ffe0e0; }
+  .btn-sm { padding: 6px 13px; font-size: 12px; border-radius: 7px; }
+  .alert {
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .alert-danger { background: #fff0f0; color: var(--danger); border: 1px solid #fcc; }
+  .alert-success { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+  .alert-warn { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+
+  /* ── MAIN APP ───────────────────────────────────────────── */
+  #mainApp { display: none; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 240px;
+    height: 100vh;
+    background: linear-gradient(180deg, var(--navy) 0%, #162545 100%);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    box-shadow: 4px 0 24px rgba(15,30,60,0.18);
+  }
+  .sidebar-brand {
+    padding: 28px 22px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .sidebar-brand .brand-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--white);
+    letter-spacing: -0.3px;
+  }
+  .sidebar-brand .brand-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+  .sidebar-brand span.dot {
+    color: var(--gold);
+  }
+  .sidebar-nav {
+    flex: 1;
+    padding: 16px 12px;
+    overflow-y: auto;
+  }
+  .nav-section {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    padding: 12px 10px 6px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.6);
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-bottom: 2px;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: var(--white); }
+  .nav-item.active {
+    background: linear-gradient(90deg, var(--gold), var(--gold2));
+    color: var(--navy);
+    font-weight: 600;
+    box-shadow: 0 3px 12px rgba(228,162,58,0.3);
+  }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+  .sidebar-footer {
+    padding: 16px 14px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .user-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--navy);
+    flex-shrink: 0;
+  }
+  .user-name { font-size: 13px; color: var(--white); font-weight: 500; }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+  .btn-logout {
+    width: 100%;
+    padding: 9px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.5);
+    font-size: 12.5px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-logout:hover { background: rgba(220,53,69,0.15); color: #ff8080; border-color: rgba(220,53,69,0.3); }
+
+  /* Main content */
+  .main-content {
+    margin-left: 240px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .topbar {
+    height: 60px;
+    background: var(--white);
+    border-bottom: 1px solid #e8edf5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .topbar-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 19px;
+    color: var(--navy);
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--gray);
+  }
+  .content-area {
+    padding: 28px;
+    flex: 1;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid #eef1f7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--navy);
+  }
+  .card-body { padding: 20px 22px; }
+
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-left: 4px solid transparent;
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow2); }
+  .stat-card:nth-child(1) { border-left-color: var(--navy); }
+  .stat-card:nth-child(2) { border-left-color: var(--gold); }
+  .stat-card:nth-child(3) { border-left-color: #3b82f6; }
+  .stat-card:nth-child(4) { border-left-color: var(--success); }
+  .stat-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .stat-card:nth-child(1) .stat-icon { background: rgba(15,30,60,0.08); }
+  .stat-card:nth-child(2) .stat-icon { background: rgba(228,162,58,0.12); }
+  .stat-card:nth-child(3) .stat-icon { background: rgba(59,130,246,0.10); }
+  .stat-card:nth-child(4) .stat-icon { background: rgba(25,135,84,0.10); }
+  .stat-value { font-size: 28px; font-weight: 700; color: var(--navy); font-variant-numeric: tabular-nums; }
+  .stat-label { font-size: 12.5px; color: var(--gray); margin-top: 2px; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th {
+    background: #f5f7fc;
+    padding: 11px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: var(--gray);
+    border-bottom: 1px solid #e8edf5;
+  }
+  tbody tr { border-bottom: 1px solid #f0f3f9; transition: background 0.15s; }
+  tbody tr:hover { background: #f8f9fc; }
+  tbody td { padding: 11px 14px; color: var(--text); }
+  tbody td:last-child { white-space: nowrap; }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-active   { background: #dcfce7; color: #15803d; }
+  .badge-inactive { background: #f3f4f6; color: #6b7280; }
+  .badge-dropped  { background: #fee2e2; color: #b91c1c; }
+  .badge-graduated{ background: #dbeafe; color: #1d4ed8; }
+  .badge-enrolled { background: #dbeafe; color: #1d4ed8; }
+  .badge-passed   { background: #dcfce7; color: #15803d; }
+  .badge-failed   { background: #fee2e2; color: #b91c1c; }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .toolbar input, .toolbar select {
+    padding: 9px 13px;
+    border: 1.5px solid #dde2ed;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .toolbar input { flex: 1; min-width: 200px; }
+  .toolbar input:focus, .toolbar select:focus { border-color: var(--navy); }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(10,20,45,0.5);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  .modal {
+    background: var(--white);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow2);
+    animation: slideUp 0.25s ease;
+  }
+  .modal-lg { max-width: 720px; }
+  @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #eef1f7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 19px;
+    color: var(--navy);
+  }
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: var(--light);
+    color: var(--gray);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .modal-close:hover { background: #dde2ed; }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 14px 24px;
+    border-top: 1px solid #eef1f7;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+  .span2 { grid-column: 1 / -1; }
+
+  /* Page visibility */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--gray);
+  }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-state p { font-size: 14px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; border-bottom: 2px solid #eef1f7; margin-bottom: 20px; }
+  .tab-btn {
+    padding: 9px 18px;
+    border: none;
+    background: none;
+    font-size: 13.5px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--gray);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.18s;
+    font-weight: 500;
+  }
+  .tab-btn.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 600; }
+  .tab-btn:hover:not(.active) { color: var(--text); }
+
+  .grade-input {
+    width: 80px;
+    padding: 5px 8px;
+    border: 1.5px solid #dde2ed;
+    border-radius: 6px;
+    font-size: 13px;
+    text-align: center;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .grade-input:focus { outline: none; border-color: var(--navy); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .sidebar { width: 200px; }
+    .main-content { margin-left: 200px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .sidebar { transform: translateX(-100%); }
+    .main-content { margin-left: 0; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .gwa-box {
+    background: linear-gradient(135deg, var(--navy), var(--navy2));
+    color: white;
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .gwa-box .label { font-size: 12px; opacity: 0.6; }
+  .gwa-box .value { font-size: 26px; font-weight: 700; font-family: 'DM Serif Display', serif; }
+
+  /* Reports */
+  .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .report-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1.5px solid #eef1f7;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: center;
+  }
+  .report-card:hover { border-color: var(--navy); box-shadow: var(--shadow); transform: translateY(-2px); }
+  .report-card .r-icon { font-size: 32px; margin-bottom: 10px; }
+  .report-card .r-title { font-weight: 600; color: var(--navy); font-size: 14px; }
+  .report-card .r-desc { font-size: 12px; color: var(--gray); margin-top: 4px; }
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <span class="logo-icon">🎓</span>
-    <span class="logo-text">EduEnroll</span>
+<!-- ══════════ LOGIN PAGE ══════════ -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">🎓</div>
+      <h1>Edu<span class="dot" style="color:var(--gold)">Enroll</span></h1>
+      <p>Web-based Enrollment System</p>
+    </div>
+    <div class="alert alert-danger" id="loginAlert"></div>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">
+      Sign In
+    </button>
+    <p style="text-align:center;font-size:11.5px;color:var(--gray);margin-top:18px;">
+      Default: <strong>admin</strong> / <strong>password</strong> &nbsp;·&nbsp; <strong>registrar</strong> / <strong>password</strong>
+    </p>
   </div>
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Main</div>
-    <button class="nav-btn active" onclick="showPage('dashboard', this)"><span class="nav-icon">🏠</span> Dashboard</button>
-    <button class="nav-btn" onclick="showPage('students', this)"><span class="nav-icon">👨‍🎓</span> Students</button>
-    <button class="nav-btn" onclick="showPage('subjects', this)"><span class="nav-icon">📚</span> Subjects</button>
-    <div class="nav-section-label">Academic</div>
-    <button class="nav-btn" onclick="showPage('enrollment', this)"><span class="nav-icon">📋</span> Enrollment</button>
-    <button class="nav-btn" onclick="showPage('grades', this)"><span class="nav-icon">📊</span> Grades</button>
-    <button class="nav-btn" onclick="showPage('reports', this)"><span class="nav-icon">📄</span> Reports</button>
-  </nav>
-  <div class="sidebar-footer">v1.0 &nbsp;·&nbsp; © 2025 EduEnroll</div>
-</aside>
+</div>
 
-<!-- MAIN -->
-<div class="main-wrap">
-  <header class="topbar">
-    <span class="topbar-title" id="pageTitle">Dashboard</span>
-    <span class="topbar-date" id="topDate"></span>
-  </header>
-
-  <div class="content-area">
-
-    <!-- ══ DASHBOARD ══ -->
-    <div class="page active" id="page-dashboard">
-      <div class="stats-grid">
-        <div class="stat-card blue">
-          <div class="stat-icon">👨‍🎓</div>
-          <div class="stat-info">
-            <div class="stat-value" id="ds-students">0</div>
-            <div class="stat-label">Active Students</div>
-          </div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-icon">📚</div>
-          <div class="stat-info">
-            <div class="stat-value" id="ds-subjects">0</div>
-            <div class="stat-label">Total Subjects</div>
-          </div>
-        </div>
-        <div class="stat-card purple">
-          <div class="stat-icon">📋</div>
-          <div class="stat-info">
-            <div class="stat-value" id="ds-enrolled">0</div>
-            <div class="stat-label">Enrolled this SY</div>
-          </div>
-        </div>
-        <div class="stat-card red">
-          <div class="stat-icon">📊</div>
-          <div class="stat-info">
-            <div class="stat-value" id="ds-total-enroll">0</div>
-            <div class="stat-label">Total Enrollments</div>
-          </div>
+<!-- ══════════ MAIN APP ══════════ -->
+<div id="mainApp">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-name">Edu<span class="dot">Enroll</span></div>
+      <div class="brand-sub">ENROLLMENT SYSTEM</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <span class="icon">📊</span> Dashboard
+      </div>
+      <div class="nav-section">Records</div>
+      <div class="nav-item" onclick="showPage('students')">
+        <span class="icon">👨‍🎓</span> Students
+      </div>
+      <div class="nav-item" onclick="showPage('subjects')">
+        <span class="icon">📚</span> Subjects
+      </div>
+      <div class="nav-item" onclick="showPage('enrollments')">
+        <span class="icon">📋</span> Enrollment
+      </div>
+      <div class="nav-item" onclick="showPage('grades')">
+        <span class="icon">📝</span> Grades
+      </div>
+      <div class="nav-section">Reports</div>
+      <div class="nav-item" onclick="showPage('reports')">
+        <span class="icon">📄</span> Reports
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="sidebarAvatar">A</div>
+        <div>
+          <div class="user-name" id="sidebarName">Admin</div>
+          <div class="user-role" id="sidebarRole">admin</div>
         </div>
       </div>
+      <button class="btn-logout" onclick="doLogout()">🚪 Sign Out</button>
+    </div>
+  </aside>
 
-      <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">Recent Enrollments</span>
-          <span class="report-info" id="ds-sy-label"></span>
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right">
+        <span id="topbarDate"></span>
+        <span>•</span>
+        <span id="topbarUser">Admin</span>
+      </div>
+    </div>
+
+    <div class="content-area">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">👨‍🎓</div>
+            <div>
+              <div class="stat-value" id="stat-students">0</div>
+              <div class="stat-label">Active Students</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div>
+              <div class="stat-value" id="stat-subjects">0</div>
+              <div class="stat-label">Total Subjects</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div>
+              <div class="stat-value" id="stat-enrolled">0</div>
+              <div class="stat-label">Students Enrolled (SY)</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div>
+              <div class="stat-value" id="stat-total">0</div>
+              <div class="stat-label">Total Enrollments</div>
+            </div>
+          </div>
         </div>
-        <div class="panel-body">
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Enrollments</span>
+          </div>
           <div class="table-wrap">
-            <table id="dash-table">
-              <thead><tr>
-                <th>Student No.</th><th>Student Name</th><th>Subject Code</th>
-                <th>Subject</th><th>School Year</th><th>Semester</th><th>Date Enrolled</th>
-              </tr></thead>
-              <tbody id="dash-tbody"></tbody>
+            <table>
+              <thead>
+                <tr>
+                  <th>Student No.</th>
+                  <th>Student Name</th>
+                  <th>Subject</th>
+                  <th>School Year</th>
+                  <th>Semester</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="recentTable">
+                <tr><td colspan="6"><div class="empty-state"><div class="icon">📋</div><p>Loading...</p></div></td></tr>
+              </tbody>
             </table>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ══ STUDENTS ══ -->
-    <div class="page" id="page-students">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="toolbar">
-            <div class="search-box"><input type="text" id="stu-search" placeholder="Search students..." oninput="loadStudents()"></div>
-            <select class="sel" id="stu-filter" onchange="loadStudents()">
-              <option>All Status</option><option>Active</option><option>Inactive</option><option>Graduated</option><option>Dropped</option>
-            </select>
-          </div>
-          <div class="toolbar">
-            <button class="btn btn-blue" onclick="openStudentForm()">➕ Add Student</button>
-            <button class="btn btn-green" onclick="editSelectedStudent()">✏️ Edit</button>
-            <button class="btn btn-red" onclick="deleteSelectedStudent()">🗑️ Delete</button>
-          </div>
+      <!-- ── STUDENTS ── -->
+      <div class="page" id="page-students">
+        <div class="toolbar">
+          <input type="text" id="studentSearch" placeholder="🔍  Search by name, student no, course..." oninput="loadStudents()">
+          <select id="studentStatus" onchange="loadStudents()">
+            <option>All Status</option>
+            <option>Active</option>
+            <option>Inactive</option>
+            <option>Graduated</option>
+            <option>Dropped</option>
+          </select>
+          <button class="btn btn-gold" onclick="openStudentModal()">＋ Add Student</button>
         </div>
-        <div class="info-row"><span id="stu-count">0 records</span></div>
-        <div class="panel-body">
+        <div class="card">
           <div class="table-wrap">
-            <table id="stu-table">
-              <thead><tr>
-                <th>Student No.</th><th>Full Name</th><th>Gender</th>
-                <th>Year</th><th>Course</th><th>Status</th><th>Date Added</th>
-              </tr></thead>
-              <tbody id="stu-tbody"></tbody>
+            <table>
+              <thead>
+                <tr>
+                  <th>Student No.</th>
+                  <th>Name</th>
+                  <th>Course</th>
+                  <th>Year</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTable"></tbody>
             </table>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ══ SUBJECTS ══ -->
-    <div class="page" id="page-subjects">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="toolbar">
-            <div class="search-box"><input type="text" id="sub-search" placeholder="Search subjects..." oninput="loadSubjects()"></div>
-          </div>
-          <div class="toolbar">
-            <button class="btn btn-blue" onclick="openSubjectForm()">➕ Add Subject</button>
-            <button class="btn btn-green" onclick="editSelectedSubject()">✏️ Edit</button>
-            <button class="btn btn-red" onclick="deleteSelectedSubject()">🗑️ Delete</button>
-          </div>
+      <!-- ── SUBJECTS ── -->
+      <div class="page" id="page-subjects">
+        <div class="toolbar">
+          <input type="text" id="subjectSearch" placeholder="🔍  Search subjects..." oninput="loadSubjects()">
+          <select id="subjectSem" onchange="loadSubjects()">
+            <option value="">All Semesters</option>
+            <option>1st</option>
+            <option>2nd</option>
+            <option>Summer</option>
+          </select>
+          <button class="btn btn-gold" onclick="openSubjectModal()">＋ Add Subject</button>
         </div>
-        <div class="info-row"><span id="sub-count">0 records</span></div>
-        <div class="panel-body">
+        <div class="card">
           <div class="table-wrap">
-            <table id="sub-table">
-              <thead><tr>
-                <th>Code</th><th>Subject Name</th><th>Units</th><th>Year Level</th><th>Semester</th><th>Description</th>
-              </tr></thead>
-              <tbody id="sub-tbody"></tbody>
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Subject Name</th>
+                  <th>Units</th>
+                  <th>Year Level</th>
+                  <th>Semester</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="subjectsTable"></tbody>
             </table>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ══ ENROLLMENT ══ -->
-    <div class="page" id="page-enrollment">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="toolbar">
-            <select class="sel" id="enr-student" onchange="loadEnrollments()" style="max-width:240px">
-              <option value="">All Students</option>
-            </select>
-            <select class="sel" id="enr-sy" onchange="loadEnrollments()"></select>
-            <select class="sel" id="enr-sem" onchange="loadEnrollments()">
-              <option>All</option><option>1st</option><option>2nd</option><option>Summer</option>
-            </select>
-          </div>
-          <div class="toolbar">
-            <button class="btn btn-blue" onclick="openEnrollForm()">➕ Enroll Student</button>
-            <button class="btn btn-red" onclick="dropEnrollment()">❌ Drop Subject</button>
-          </div>
+      <!-- ── ENROLLMENTS ── -->
+      <div class="page" id="page-enrollments">
+        <div class="toolbar">
+          <select id="enrollSY" onchange="loadEnrollments()">
+            <option>All Years</option>
+            <option>2025-2026</option>
+            <option>2024-2025</option>
+            <option>2023-2024</option>
+          </select>
+          <select id="enrollSem" onchange="loadEnrollments()">
+            <option>All</option>
+            <option>1st</option>
+            <option>2nd</option>
+            <option>Summer</option>
+          </select>
+          <button class="btn btn-gold" onclick="openEnrollModal()">＋ Enroll Student</button>
         </div>
-        <div class="info-row"><span id="enr-count">0 records</span></div>
-        <div class="panel-body">
+        <div class="card">
           <div class="table-wrap">
-            <table id="enr-table">
-              <thead><tr>
-                <th>Student No.</th><th>Student Name</th><th>Code</th>
-                <th>Subject</th><th>Units</th><th>School Year</th><th>Semester</th><th>Status</th><th>Date Enrolled</th>
-              </tr></thead>
-              <tbody id="enr-tbody"></tbody>
+            <table>
+              <thead>
+                <tr>
+                  <th>Student No.</th>
+                  <th>Student Name</th>
+                  <th>Subject</th>
+                  <th>Units</th>
+                  <th>School Year</th>
+                  <th>Semester</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="enrollmentsTable"></tbody>
             </table>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ══ GRADES ══ -->
-    <div class="page" id="page-grades">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="toolbar">
-            <select class="sel" id="grd-student" onchange="loadGrades()" style="max-width:280px">
-              <option value="">-- Select Student --</option>
-            </select>
-            <select class="sel" id="grd-sy" onchange="loadGrades()"></select>
-          </div>
-          <button class="btn btn-green" onclick="saveGrades()">💾 Save Grades</button>
+      <!-- ── GRADES ── -->
+      <div class="page" id="page-grades">
+        <div class="toolbar">
+          <select id="gradeStudentSelect" onchange="loadGrades()">
+            <option value="">— Select Student —</option>
+          </select>
+          <select id="gradeSY" onchange="loadGrades()">
+            <option>All Years</option>
+            <option>2025-2026</option>
+            <option>2024-2025</option>
+          </select>
         </div>
-        <div class="gwa-bar" id="gwa-bar" style="display:none">
-          <span>GWA:</span>
-          <span class="gwa-val" id="gwa-val">—</span>
-          <span id="gwa-units" style="font-size:12px;color:var(--text3)"></span>
-        </div>
-        <div class="panel-body">
-          <div class="table-wrap">
-            <table id="grd-table">
-              <thead><tr>
-                <th>Code</th><th>Subject</th><th>Units</th><th>School Year</th><th>Semester</th><th>Grade</th><th>Status</th>
-              </tr></thead>
-              <tbody id="grd-tbody"></tbody>
-            </table>
-          </div>
+        <div id="gradesContent">
+          <div class="empty-state"><div class="icon">📝</div><p>Select a student to view grades.</p></div>
         </div>
       </div>
-    </div>
 
-    <!-- ══ REPORTS ══ -->
-    <div class="page" id="page-reports">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="toolbar">
-            <select class="sel" id="rpt-type">
-              <option value="0">All Active Students</option>
-              <option value="1">Enrollment List by Subject</option>
-              <option value="2">Student Grade Summary</option>
-              <option value="3">Subjects Offered</option>
-              <option value="4">Students Per Course</option>
-            </select>
-            <select class="sel" id="rpt-sy"></select>
-            <select class="sel" id="rpt-sem">
-              <option>All</option><option>1st</option><option>2nd</option><option>Summer</option>
-            </select>
-            <button class="btn btn-blue" onclick="generateReport()">📊 Generate</button>
-          </div>
-          <span class="report-info" id="rpt-count"></span>
-        </div>
-        <div class="panel-body">
-          <div class="table-wrap" id="rpt-table-wrap">
-            <div class="no-data"><div class="no-data-icon">📊</div>Select a report type and click Generate</div>
+      <!-- ── REPORTS ── -->
+      <div class="page" id="page-reports">
+        <div style="margin-bottom:22px;">
+          <div class="form-row" style="max-width:500px;">
+            <div class="form-group">
+              <label>School Year</label>
+              <select id="reportSY">
+                <option>2025-2026</option>
+                <option>2024-2025</option>
+                <option>2023-2024</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Semester</label>
+              <select id="reportSem">
+                <option>All</option>
+                <option>1st</option>
+                <option>2nd</option>
+                <option>Summer</option>
+              </select>
+            </div>
           </div>
         </div>
+        <div class="report-grid">
+          <div class="report-card" onclick="runReport('enrollment_list')">
+            <div class="r-icon">📋</div>
+            <div class="r-title">Enrollment List</div>
+            <div class="r-desc">All enrollments for selected SY & sem</div>
+          </div>
+          <div class="report-card" onclick="runReport('student_masterlist')">
+            <div class="r-icon">👨‍🎓</div>
+            <div class="r-title">Student Masterlist</div>
+            <div class="r-desc">All active students with courses</div>
+          </div>
+          <div class="report-card" onclick="runReport('grades_report')">
+            <div class="r-icon">📊</div>
+            <div class="r-title">Grades Report</div>
+            <div class="r-desc">Grades per student per semester</div>
+          </div>
+          <div class="report-card" onclick="runReport('subject_enrollment')">
+            <div class="r-icon">📚</div>
+            <div class="r-title">Subject Enrollment Count</div>
+            <div class="r-desc">Number of students per subject</div>
+          </div>
+          <div class="report-card" onclick="runReport('dean_list')">
+            <div class="r-icon">🏆</div>
+            <div class="r-title">Dean's List</div>
+            <div class="r-desc">Students with GWA ≤ 1.75</div>
+          </div>
+        </div>
+        <div id="reportOutput" style="margin-top:24px;"></div>
       </div>
-    </div>
 
-  </div><!-- content-area -->
-</div><!-- main-wrap -->
+    </div><!-- /content-area -->
+  </div><!-- /main-content -->
+</div><!-- /mainApp -->
 
-<!-- ══ STUDENT FORM MODAL ══ -->
-<div class="modal-overlay" id="modal-student">
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- Student Modal -->
+<div id="studentModal" class="modal-backdrop" style="display:none">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title" id="stu-modal-title">Add New Student</span>
-      <button class="modal-close" onclick="closeModal('modal-student')">×</button>
+      <div class="modal-title" id="studentModalTitle">Add Student</div>
+      <button class="modal-close" onclick="closeModal('studentModal')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-grid">
-        <div class="field full"><label class="required">Student No.</label><input type="text" id="sf-no" placeholder="e.g. 2024-0001"></div>
-        <div class="field"><label class="required">Last Name</label><input type="text" id="sf-ln"></div>
-        <div class="field"><label class="required">First Name</label><input type="text" id="sf-fn"></div>
-        <div class="field"><label>Middle Name</label><input type="text" id="sf-mn"></div>
-        <div class="field"><label>Gender</label>
-          <select id="sf-gender"><option>Male</option><option>Female</option><option>Other</option></select>
-        </div>
-        <div class="field"><label>Birthdate</label><input type="date" id="sf-bdate"></div>
-        <div class="field"><label>Contact No.</label><input type="text" id="sf-contact"></div>
-        <div class="field"><label>Email</label><input type="email" id="sf-email"></div>
-        <div class="field full"><label>Address</label><input type="text" id="sf-address"></div>
-        <div class="field"><label class="required">Year Level</label>
-          <select id="sf-year"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-        </div>
-        <div class="field"><label class="required">Course</label><input type="text" id="sf-course" placeholder="e.g. BSCS"></div>
-        <div class="field"><label>Status</label>
-          <select id="sf-status"><option>Active</option><option>Inactive</option><option>Graduated</option><option>Dropped</option></select>
+      <input type="hidden" id="s_id">
+      <div class="form-row triple">
+        <div class="form-group span2"><label>Student No. *</label><input type="text" id="s_no" placeholder="2024-0001"></div>
+        <div class="form-group"><label>Status</label>
+          <select id="s_status">
+            <option>Active</option><option>Inactive</option><option>Graduated</option><option>Dropped</option>
+          </select>
         </div>
       </div>
-      <div class="field-err" id="sf-err" style="margin-top:8px"></div>
+      <div class="form-row triple">
+        <div class="form-group"><label>Last Name *</label><input type="text" id="s_last"></div>
+        <div class="form-group"><label>First Name *</label><input type="text" id="s_first"></div>
+        <div class="form-group"><label>Middle Name</label><input type="text" id="s_mid"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Gender</label>
+          <select id="s_gender"><option>Male</option><option>Female</option><option>Other</option></select>
+        </div>
+        <div class="form-group"><label>Birthdate</label><input type="date" id="s_birth"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Course *</label>
+          <select id="s_course">
+            <option>BSCS</option><option>BSIT</option><option>BSEMC</option><option>BSIS</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Year Level</label>
+          <select id="s_year"><option value="1">1st Year</option><option value="2">2nd Year</option><option value="3">3rd Year</option><option value="4">4th Year</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Contact</label><input type="text" id="s_contact" placeholder="09xxxxxxxxx"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="s_email" placeholder="student@email.com"></div>
+      </div>
+      <div class="form-group"><label>Address</label><textarea id="s_address" rows="2" placeholder="Complete address"></textarea></div>
+      <div class="alert" id="studentAlert"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('modal-student')">Cancel</button>
-      <button class="btn btn-blue" onclick="saveStudent()">💾 Save</button>
+      <button class="btn btn-outline" onclick="closeModal('studentModal')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveStudent()">Save Student</button>
     </div>
   </div>
 </div>
 
-<!-- ══ SUBJECT FORM MODAL ══ -->
-<div class="modal-overlay" id="modal-subject">
+<!-- Subject Modal -->
+<div id="subjectModal" class="modal-backdrop" style="display:none">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title" id="sub-modal-title">Add Subject</span>
-      <button class="modal-close" onclick="closeModal('modal-subject')">×</button>
+      <div class="modal-title" id="subjectModalTitle">Add Subject</div>
+      <button class="modal-close" onclick="closeModal('subjectModal')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-grid">
-        <div class="field"><label class="required">Subject Code</label><input type="text" id="subf-code" placeholder="e.g. CC101"></div>
-        <div class="field"><label class="required">Subject Name</label><input type="text" id="subf-name"></div>
-        <div class="field"><label class="required">Units</label>
-          <select id="subf-units"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select>
-        </div>
-        <div class="field"><label>Year Level</label>
-          <select id="subf-year"><option>1</option><option>2</option><option>3</option><option>4</option></select>
-        </div>
-        <div class="field"><label>Semester</label>
-          <select id="subf-sem"><option>1st</option><option>2nd</option><option>Summer</option></select>
-        </div>
-        <div class="field full"><label>Description</label><input type="text" id="subf-desc"></div>
+      <input type="hidden" id="sub_id">
+      <div class="form-row">
+        <div class="form-group"><label>Subject Code *</label><input type="text" id="sub_code" placeholder="CC101"></div>
+        <div class="form-group"><label>Units *</label><input type="number" id="sub_units" value="3" min="1" max="6"></div>
       </div>
-      <div class="field-err" id="subf-err" style="margin-top:8px"></div>
+      <div class="form-group"><label>Subject Name *</label><input type="text" id="sub_name" placeholder="Introduction to Computing"></div>
+      <div class="form-row triple">
+        <div class="form-group">
+          <label>Year Level</label>
+          <select id="sub_year"><option value="1">1st</option><option value="2">2nd</option><option value="3">3rd</option><option value="4">4th</option></select>
+        </div>
+        <div class="form-group">
+          <label>Semester</label>
+          <select id="sub_sem"><option>1st</option><option>2nd</option><option>Summer</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea id="sub_desc" rows="2"></textarea></div>
+      <div class="alert" id="subjectAlert"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('modal-subject')">Cancel</button>
-      <button class="btn btn-blue" onclick="saveSubject()">💾 Save</button>
+      <button class="btn btn-outline" onclick="closeModal('subjectModal')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveSubject()">Save Subject</button>
     </div>
   </div>
 </div>
 
-<!-- ══ ENROLL FORM MODAL ══ -->
-<div class="modal-overlay" id="modal-enroll">
+<!-- Enrollment Modal -->
+<div id="enrollModal" class="modal-backdrop" style="display:none">
   <div class="modal modal-lg">
     <div class="modal-header">
-      <span class="modal-title">Enroll Student in Subjects</span>
-      <button class="modal-close" onclick="closeModal('modal-enroll')">×</button>
+      <div class="modal-title">Enroll Student</div>
+      <button class="modal-close" onclick="closeModal('enrollModal')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-grid">
-        <div class="field full"><label class="required">Student</label>
-          <select id="enrf-student"></select>
+      <div class="form-row triple">
+        <div class="form-group span2">
+          <label>Student *</label>
+          <select id="enroll_student"></select>
         </div>
-        <div class="field"><label class="required">School Year</label><input type="text" id="enrf-sy"></div>
-        <div class="field"><label class="required">Semester</label>
-          <select id="enrf-sem"><option>1st</option><option>2nd</option><option>Summer</option></select>
-        </div>
-        <div class="field full">
-          <label class="required">Subjects (check to select)</label>
-          <div class="check-list" id="enrf-subjects"></div>
+        <div class="form-group">
+          <label>School Year *</label>
+          <input type="text" id="enroll_sy" value="2025-2026" placeholder="2025-2026">
         </div>
       </div>
-      <div class="field-err" id="enrf-err" style="margin-top:8px"></div>
+      <div class="form-group" style="max-width:200px;">
+        <label>Semester *</label>
+        <select id="enroll_sem"><option>1st</option><option>2nd</option><option>Summer</option></select>
+      </div>
+      <div class="form-group">
+        <label>Select Subjects *</label>
+        <div id="subjectCheckboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:240px;overflow-y:auto;border:1.5px solid #dde2ed;border-radius:9px;padding:12px;"></div>
+      </div>
+      <div class="alert" id="enrollAlert"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('modal-enroll')">Cancel</button>
-      <button class="btn btn-blue" onclick="saveEnrollment()">✅ Enroll Now</button>
+      <button class="btn btn-outline" onclick="closeModal('enrollModal')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveEnrollment()">Enroll</button>
     </div>
   </div>
 </div>
 
-<!-- ══ CONFIRM DIALOG ══ -->
-<div class="confirm-overlay" id="confirm-overlay">
-  <div class="confirm-box">
-    <div class="confirm-icon" id="confirm-icon">⚠️</div>
-    <div class="confirm-title" id="confirm-title">Confirm</div>
-    <div class="confirm-msg" id="confirm-msg"></div>
-    <div class="confirm-btns">
-      <button class="btn btn-outline" onclick="confirmResolve(false)">Cancel</button>
-      <button class="btn btn-red" id="confirm-ok-btn" onclick="confirmResolve(true)">Confirm</button>
+<!-- Confirm Delete Modal -->
+<div id="confirmModal" class="modal-backdrop" style="display:none">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <div class="modal-title">⚠️ Confirm Delete</div>
+      <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMsg" style="font-size:14px;color:var(--text);line-height:1.6;"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('confirmModal')">Cancel</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Delete</button>
     </div>
   </div>
 </div>
 
-<!-- TOASTS -->
-<div class="toast-wrap" id="toast-wrap"></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.min.js"></script>
 <script>
-// ══════════════════════════════════════════
-//  DATABASE LAYER
-// ══════════════════════════════════════════
-let DB = null;
+// ══════════ STATE ══════════
+let currentUser = null;
+let studentsData = [];
+let subjectsData = [];
 
-async function initDB() {
-  const SQL = await initSqlJs({
-    locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
-  });
-  DB = new SQL.Database();
-
-  DB.run(`
-    CREATE TABLE IF NOT EXISTS Students (
-      StudentID   INTEGER PRIMARY KEY AUTOINCREMENT,
-      StudentNo   TEXT NOT NULL UNIQUE,
-      LastName    TEXT NOT NULL,
-      FirstName   TEXT NOT NULL,
-      MiddleName  TEXT DEFAULT '',
-      Gender      TEXT DEFAULT 'Male',
-      Birthdate   TEXT DEFAULT '',
-      Address     TEXT DEFAULT '',
-      Contact     TEXT DEFAULT '',
-      Email       TEXT DEFAULT '',
-      YearLevel   INTEGER DEFAULT 1,
-      Course      TEXT DEFAULT '',
-      Status      TEXT DEFAULT 'Active',
-      DateAdded   TEXT DEFAULT (date('now'))
-    );
-    CREATE TABLE IF NOT EXISTS Subjects (
-      SubjectID   INTEGER PRIMARY KEY AUTOINCREMENT,
-      SubjectCode TEXT NOT NULL UNIQUE,
-      SubjectName TEXT NOT NULL,
-      Units       INTEGER NOT NULL DEFAULT 3,
-      YearLevel   INTEGER DEFAULT 1,
-      Semester    TEXT DEFAULT '1st',
-      Description TEXT DEFAULT ''
-    );
-    CREATE TABLE IF NOT EXISTS Enrollments (
-      EnrollID    INTEGER PRIMARY KEY AUTOINCREMENT,
-      StudentID   INTEGER NOT NULL,
-      SubjectID   INTEGER NOT NULL,
-      SchoolYear  TEXT NOT NULL,
-      Semester    TEXT NOT NULL,
-      Grade       REAL,
-      Status      TEXT DEFAULT 'Enrolled',
-      DateEnrolled TEXT DEFAULT (date('now')),
-      FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
-      FOREIGN KEY (SubjectID) REFERENCES Subjects(SubjectID),
-      UNIQUE(StudentID, SubjectID, SchoolYear, Semester)
-    );
-  `);
-
-  seedData();
-}
-
-function seedData() {
-  const count = queryScalar('SELECT COUNT(*) FROM Students');
-  if (count > 0) return;
-
-  DB.run(`INSERT INTO Students (StudentNo,LastName,FirstName,MiddleName,Gender,YearLevel,Course,Status) VALUES
-    ('2024-0001','Reyes','Maria','Santos','Female',1,'BSCS','Active'),
-    ('2024-0002','Cruz','Juan','dela','Male',2,'BSIT','Active'),
-    ('2024-0003','Santos','Ana','Garcia','Female',3,'BSCS','Active'),
-    ('2023-0010','Bautista','Carlos','Mendoza','Male',2,'BSIT','Active')`);
-
-  DB.run(`INSERT INTO Subjects (SubjectCode,SubjectName,Units,YearLevel,Semester) VALUES
-    ('CC101','Introduction to Computing',3,1,'1st'),
-    ('CC102','Computer Programming 1',3,1,'1st'),
-    ('CC103','Computer Programming 2',3,1,'2nd'),
-    ('CC201','Data Structures and Algorithms',3,2,'1st'),
-    ('CC202','Object-Oriented Programming',3,2,'1st'),
-    ('CC301','Software Engineering',3,3,'1st'),
-    ('CC302','Database Management Systems',3,2,'2nd'),
-    ('MATH101','Mathematics in the Modern World',3,1,'1st'),
-    ('GE101','Understanding the Self',3,1,'1st'),
-    ('PE101','Physical Education 1',2,1,'1st')`);
-
-  // sample enrollments
-  const sy = currentSY();
-  DB.run(`INSERT OR IGNORE INTO Enrollments (StudentID,SubjectID,SchoolYear,Semester) VALUES
-    (1,1,'${sy}','1st'),(1,2,'${sy}','1st'),(1,8,'${sy}','1st'),
-    (2,4,'${sy}','1st'),(2,5,'${sy}','1st'),
-    (3,6,'${sy}','1st'),(4,4,'${sy}','1st'),(4,5,'${sy}','1st')`);
-}
-
-function queryAll(sql, params = []) {
-  try {
-    const stmt = DB.prepare(sql);
-    stmt.bind(params);
-    const rows = [];
-    while (stmt.step()) rows.push(stmt.getAsObject());
-    stmt.free();
-    return rows;
-  } catch(e) { console.error(e); return []; }
-}
-
-function queryScalar(sql, params = []) {
-  const rows = queryAll(sql, params);
-  if (!rows.length) return 0;
-  return Object.values(rows[0])[0] || 0;
-}
-
-function run(sql, params = []) {
-  try { DB.run(sql, params); return true; }
-  catch(e) { console.error(e); return e.message; }
-}
-
-function currentSY() {
-  const y = new Date().getFullYear();
-  return `${y}-${y+1}`;
-}
-
-function syOptions() {
-  const y = new Date().getFullYear();
-  const opts = ['All Years'];
-  for (let i = 0; i <= 4; i++) opts.push(`${y-i}-${y-i+1}`);
-  return opts;
-}
-
-// ══════════════════════════════════════════
-//  NAVIGATION
-// ══════════════════════════════════════════
-const pageTitles = {
-  dashboard:'Dashboard', students:'Students', subjects:'Subjects',
-  enrollment:'Enrollment', grades:'Grades', reports:'Reports'
+// ══════════ API ══════════
+const API = {
+  base: 'api',
+  async call(endpoint, method = 'GET', body = null) {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(this.base + '/' + endpoint, opts);
+    return res.json();
+  },
+  get(ep)       { return this.call(ep); },
+  post(ep, b)   { return this.call(ep, 'POST', b); },
+  put(ep, b)    { return this.call(ep, 'PUT', b); },
+  delete(ep)    { return this.call(ep, 'DELETE'); },
 };
 
-function showPage(id, btn) {
+// ══════════ MOCK DATA (offline demo) ══════════
+// Since we're a standalone HTML demo, we simulate the backend in memory
+const DB = {
+  users: [
+    { user_id:1, username:'admin', password:'password', full_name:'System Administrator', role:'admin' },
+    { user_id:2, username:'registrar', password:'password', full_name:'Head Registrar', role:'registrar' },
+  ],
+  students: [
+    { student_id:1, student_no:'2024-0001', last_name:'Reyes', first_name:'Maria', middle_name:'Santos', gender:'Female', year_level:1, course:'BSCS', status:'Active', contact:'', email:'', address:'', birthdate:'', date_added:'2024-01-01' },
+    { student_id:2, student_no:'2024-0002', last_name:'Cruz', first_name:'Juan', middle_name:'dela', gender:'Male', year_level:2, course:'BSIT', status:'Active', contact:'', email:'', address:'', birthdate:'', date_added:'2024-01-02' },
+    { student_id:3, student_no:'2024-0003', last_name:'Santos', first_name:'Ana', middle_name:'Garcia', gender:'Female', year_level:3, course:'BSCS', status:'Active', contact:'', email:'', address:'', birthdate:'', date_added:'2024-01-03' },
+    { student_id:4, student_no:'2023-0010', last_name:'Bautista', first_name:'Carlos', middle_name:'Mendoza', gender:'Male', year_level:2, course:'BSIT', status:'Active', contact:'', email:'', address:'', birthdate:'', date_added:'2023-06-01' },
+  ],
+  subjects: [
+    { subject_id:1, subject_code:'CC101', subject_name:'Introduction to Computing', units:3, year_level:1, semester:'1st', description:'' },
+    { subject_id:2, subject_code:'CC102', subject_name:'Computer Programming 1', units:3, year_level:1, semester:'1st', description:'' },
+    { subject_id:3, subject_code:'CC103', subject_name:'Computer Programming 2', units:3, year_level:1, semester:'2nd', description:'' },
+    { subject_id:4, subject_code:'CC201', subject_name:'Data Structures and Algorithms', units:3, year_level:2, semester:'1st', description:'' },
+    { subject_id:5, subject_code:'CC202', subject_name:'Object-Oriented Programming', units:3, year_level:2, semester:'1st', description:'' },
+    { subject_id:6, subject_code:'CC301', subject_name:'Software Engineering', units:3, year_level:3, semester:'1st', description:'' },
+    { subject_id:7, subject_code:'CC302', subject_name:'Database Management Systems', units:3, year_level:2, semester:'2nd', description:'' },
+    { subject_id:8, subject_code:'MATH101', subject_name:'Mathematics in the Modern World', units:3, year_level:1, semester:'1st', description:'' },
+    { subject_id:9, subject_code:'GE101', subject_name:'Understanding the Self', units:3, year_level:1, semester:'1st', description:'' },
+    { subject_id:10, subject_code:'PE101', subject_name:'Physical Education 1', units:2, year_level:1, semester:'1st', description:'' },
+  ],
+  enrollments: [
+    { enroll_id:1, student_id:1, subject_id:1, school_year:'2025-2026', semester:'1st', grade:null, status:'Enrolled', enrolled_at:'2025-06-01' },
+    { enroll_id:2, student_id:1, subject_id:2, school_year:'2025-2026', semester:'1st', grade:null, status:'Enrolled', enrolled_at:'2025-06-01' },
+    { enroll_id:3, student_id:1, subject_id:8, school_year:'2025-2026', semester:'1st', grade:null, status:'Enrolled', enrolled_at:'2025-06-01' },
+    { enroll_id:4, student_id:2, subject_id:4, school_year:'2025-2026', semester:'1st', grade:null, status:'Enrolled', enrolled_at:'2025-06-02' },
+    { enroll_id:5, student_id:2, subject_id:5, school_year:'2025-2026', semester:'1st', grade:null, status:'Enrolled', enrolled_at:'2025-06-02' },
+    { enroll_id:6, student_id:3, subject_id:6, school_year:'2025-2026', semester:'1st', grade:null, status:'Enrolled', enrolled_at:'2025-06-03' },
+    { enroll_id:7, student_id:4, subject_id:4, school_year:'2025-2026', semester:'1st', grade:null, status:'Enrolled', enrolled_at:'2025-06-04' },
+    { enroll_id:8, student_id:4, subject_id:5, school_year:'2025-2026', semester:'1st', grade:null, status:'Enrolled', enrolled_at:'2025-06-04' },
+  ],
+  _nextId: { students:5, subjects:11, enrollments:9 },
+};
+
+// ══════════ LOGIN ══════════
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value.trim();
+  const alert = document.getElementById('loginAlert');
+
+  if (!u || !p) { showAlert(alert, 'Please enter username and password.'); return; }
+
+  const user = DB.users.find(x => x.username === u && x.password === p);
+  if (!user) { showAlert(alert, 'Invalid username or password.'); return; }
+
+  currentUser = user;
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  document.getElementById('sidebarAvatar').textContent = user.full_name.charAt(0);
+  document.getElementById('sidebarName').textContent = user.full_name;
+  document.getElementById('sidebarRole').textContent = user.role;
+  document.getElementById('topbarUser').textContent = user.full_name;
+  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'});
+
+  loadDashboard();
+}
+
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('loginUser').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPass').focus(); });
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginAlert').style.display = 'none';
+}
+
+// ══════════ NAVIGATION ══════════
+function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  btn.classList.add('active');
-  document.getElementById('pageTitle').textContent = pageTitles[id];
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(n => { if (n.textContent.toLowerCase().includes(name.replace('_',' ').split(' ')[0])) n.classList.add('active'); });
 
-  if (id === 'dashboard') refreshDashboard();
-  if (id === 'students') loadStudents();
-  if (id === 'subjects') loadSubjects();
-  if (id === 'enrollment') { initEnrFilters(); loadEnrollments(); }
-  if (id === 'grades') initGradeFilters();
-  if (id === 'reports') initReportFilters();
+  const titles = { dashboard:'Dashboard', students:'Students', subjects:'Subjects', enrollments:'Enrollment', grades:'Grades', reports:'Reports' };
+  document.getElementById('topbarTitle').textContent = titles[name] || name;
+
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'students') loadStudents();
+  if (name === 'subjects') loadSubjects();
+  if (name === 'enrollments') loadEnrollments();
+  if (name === 'grades') loadGradeStudents();
 }
 
-// ══════════════════════════════════════════
-//  DASHBOARD
-// ══════════════════════════════════════════
-function refreshDashboard() {
-  const sy = currentSY();
-  document.getElementById('ds-students').textContent = queryScalar("SELECT COUNT(*) FROM Students WHERE Status='Active'");
-  document.getElementById('ds-subjects').textContent = queryScalar("SELECT COUNT(*) FROM Subjects");
-  document.getElementById('ds-enrolled').textContent = queryScalar("SELECT COUNT(DISTINCT StudentID) FROM Enrollments WHERE SchoolYear=?", [sy]);
-  document.getElementById('ds-total-enroll').textContent = queryScalar("SELECT COUNT(*) FROM Enrollments WHERE SchoolYear=?", [sy]);
-  document.getElementById('ds-sy-label').textContent = `Current SY: ${sy}`;
+// ══════════ DASHBOARD ══════════
+function loadDashboard() {
+  const active = DB.students.filter(s => s.status === 'Active').length;
+  const sy = '2025-2026';
+  const enrolledSY = [...new Set(DB.enrollments.filter(e => e.school_year === sy).map(e => e.student_id))].length;
+  const totalEnroll = DB.enrollments.filter(e => e.school_year === sy).length;
 
-  const rows = queryAll(`
-    SELECT s.StudentNo, s.LastName||', '||s.FirstName AS sname,
-           sub.SubjectCode, sub.SubjectName, e.SchoolYear, e.Semester, e.DateEnrolled
-    FROM Enrollments e
-    JOIN Students s ON e.StudentID=s.StudentID
-    JOIN Subjects sub ON e.SubjectID=sub.SubjectID
-    ORDER BY e.EnrollID DESC LIMIT 20`);
+  animateNum('stat-students', active);
+  animateNum('stat-subjects', DB.subjects.length);
+  animateNum('stat-enrolled', enrolledSY);
+  animateNum('stat-total', totalEnroll);
 
-  const tb = document.getElementById('dash-tbody');
-  tb.innerHTML = rows.length ? rows.map(r => `
-    <tr>
-      <td><b>${r.StudentNo}</b></td><td>${r.sname}</td>
-      <td><span class="badge badge-blue">${r.SubjectCode}</span></td>
-      <td>${r.SubjectName}</td><td>${r.SchoolYear}</td>
-      <td>${r.Semester}</td><td>${r.DateEnrolled||'—'}</td>
-    </tr>`).join('') : `<tr><td colspan="7"><div class="no-data"><div class="no-data-icon">📋</div>No enrollments yet</div></td></tr>`;
+  const recent = DB.enrollments.slice().reverse().slice(0, 20).map(e => {
+    const s = DB.students.find(x => x.student_id === e.student_id);
+    const sub = DB.subjects.find(x => x.subject_id === e.subject_id);
+    return `<tr>
+      <td>${s.student_no}</td>
+      <td><strong>${s.last_name}, ${s.first_name}</strong></td>
+      <td>${sub.subject_code} — ${sub.subject_name}</td>
+      <td>${e.school_year}</td>
+      <td>${e.semester}</td>
+      <td>${e.enrolled_at}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6"><div class="empty-state"><div class="icon">📋</div><p>No enrollments yet.</p></div></td></tr>';
+  document.getElementById('recentTable').innerHTML = recent;
 }
 
-// ══════════════════════════════════════════
-//  STUDENTS
-// ══════════════════════════════════════════
-let selectedStudentId = null;
+function animateNum(id, target) {
+  const el = document.getElementById(id);
+  let cur = 0;
+  const step = Math.ceil(target / 20);
+  const timer = setInterval(() => {
+    cur = Math.min(cur + step, target);
+    el.textContent = cur;
+    if (cur >= target) clearInterval(timer);
+  }, 40);
+}
 
+// ══════════ STUDENTS ══════════
 function loadStudents() {
-  const s = document.getElementById('stu-search').value;
-  const st = document.getElementById('stu-filter').value;
-  const like = `%${s}%`;
-  const where = st === 'All Status' ? '' : ` AND Status='${st}'`;
-  const rows = queryAll(`
-    SELECT StudentID, StudentNo, LastName||', '||FirstName||' '||IFNULL(MiddleName,'') AS FullName,
-           Gender, YearLevel, Course, Status, DateAdded
-    FROM Students
-    WHERE (LastName LIKE ? OR FirstName LIKE ? OR StudentNo LIKE ? OR Course LIKE ?)${where}
-    ORDER BY LastName, FirstName`, [like,like,like,like]);
-
-  document.getElementById('stu-count').textContent = `${rows.length} record(s)`;
-  const tb = document.getElementById('stu-tbody');
-  tb.innerHTML = rows.length ? rows.map(r => `
-    <tr data-id="${r.StudentID}" onclick="selectRow(this, 'students', ${r.StudentID})" ondblclick="editSelectedStudent()">
-      <td><code style="font-size:12px">${r.StudentNo}</code></td>
-      <td><b>${r.FullName.trim()}</b></td>
-      <td>${r.Gender||'—'}</td><td>${r.YearLevel}</td><td>${r.Course||'—'}</td>
-      <td><span class="badge ${r.Status==='Active'?'badge-green':r.Status==='Graduated'?'badge-blue':'badge-gray'}">${r.Status}</span></td>
-      <td>${r.DateAdded||'—'}</td>
-    </tr>`).join('')
-    : `<tr><td colspan="7"><div class="no-data"><div class="no-data-icon">👨‍🎓</div>No students found</div></td></tr>`;
+  const search = document.getElementById('studentSearch').value.toLowerCase();
+  const status = document.getElementById('studentStatus').value;
+  studentsData = DB.students.filter(s => {
+    const match = (s.last_name + ' ' + s.first_name + ' ' + s.student_no + ' ' + s.course).toLowerCase().includes(search);
+    const statMatch = status === 'All Status' || s.status === status;
+    return match && statMatch;
+  });
+  const html = studentsData.map(s => `
+    <tr>
+      <td><strong>${s.student_no}</strong></td>
+      <td>${s.last_name}, ${s.first_name} ${s.middle_name || ''}</td>
+      <td>${s.course}</td>
+      <td>${ordinal(s.year_level)} Year</td>
+      <td><span class="badge badge-${s.status.toLowerCase()}">${s.status}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="editStudent(${s.student_id})">✏️ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteStudent(${s.student_id})">🗑️</button>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="6"><div class="empty-state"><div class="icon">👨‍🎓</div><p>No students found.</p></div></td></tr>';
+  document.getElementById('studentsTable').innerHTML = html;
 }
 
-function selectRow(el, ctx, id) {
-  el.closest('tbody').querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
-  el.classList.add('selected');
-  if (ctx === 'students') selectedStudentId = id;
-  if (ctx === 'subjects') selectedSubjectId = id;
-  if (ctx === 'enrollment') selectedEnrollId = id;
-  if (ctx === 'grades') selectedEnrollId = id;
+function openStudentModal(data = null) {
+  document.getElementById('studentModalTitle').textContent = data ? 'Edit Student' : 'Add Student';
+  document.getElementById('s_id').value = data ? data.student_id : '';
+  ['s_no','s_last','s_first','s_mid','s_gender','s_birth','s_course','s_year','s_contact','s_email','s_address','s_status'].forEach(id => {
+    const el = document.getElementById(id);
+    const map = { s_no:'student_no', s_last:'last_name', s_first:'first_name', s_mid:'middle_name', s_gender:'gender', s_birth:'birthdate', s_course:'course', s_year:'year_level', s_contact:'contact', s_email:'email', s_address:'address', s_status:'status' };
+    el.value = data ? (data[map[id]] || '') : (id === 's_gender' ? 'Male' : id === 's_status' ? 'Active' : id === 's_year' ? '1' : '');
+  });
+  document.getElementById('studentAlert').style.display = 'none';
+  document.getElementById('studentModal').style.display = 'flex';
 }
 
-let editStudentId = null;
-
-function openStudentForm(id = null) {
-  editStudentId = id;
-  document.getElementById('stu-modal-title').textContent = id ? 'Edit Student Record' : 'Add New Student';
-  const fields = ['sf-no','sf-ln','sf-fn','sf-mn','sf-gender','sf-bdate','sf-contact','sf-email','sf-address','sf-year','sf-course','sf-status'];
-  fields.forEach(f => { const el = document.getElementById(f); if (el.tagName==='SELECT') el.selectedIndex=0; else el.value=''; });
-  document.getElementById('sf-err').textContent = '';
-
-  if (id) {
-    const r = queryAll("SELECT * FROM Students WHERE StudentID=?", [id])[0];
-    if (r) {
-      document.getElementById('sf-no').value = r.StudentNo||'';
-      document.getElementById('sf-ln').value = r.LastName||'';
-      document.getElementById('sf-fn').value = r.FirstName||'';
-      document.getElementById('sf-mn').value = r.MiddleName||'';
-      setSelectVal('sf-gender', r.Gender);
-      document.getElementById('sf-bdate').value = r.Birthdate||'';
-      document.getElementById('sf-contact').value = r.Contact||'';
-      document.getElementById('sf-email').value = r.Email||'';
-      document.getElementById('sf-address').value = r.Address||'';
-      setSelectVal('sf-year', String(r.YearLevel||1));
-      document.getElementById('sf-course').value = r.Course||'';
-      setSelectVal('sf-status', r.Status);
-    }
-  }
-  openModal('modal-student');
-}
-
-function setSelectVal(id, val) {
-  const sel = document.getElementById(id);
-  for (let o of sel.options) if (o.value===val||o.text===val) { sel.value=o.value; break; }
+function editStudent(id) {
+  const s = DB.students.find(x => x.student_id === id);
+  openStudentModal(s);
 }
 
 function saveStudent() {
-  const no = v('sf-no'), ln = v('sf-ln'), fn = v('sf-fn'), course = v('sf-course');
-  if (!no||!ln||!fn||!course) { document.getElementById('sf-err').textContent='Please fill in all required fields (*).'; return; }
-
-  const params = [no,ln,fn,v('sf-mn'),v('sf-gender'),v('sf-bdate'),v('sf-address'),v('sf-contact'),v('sf-email'),
-    parseInt(document.getElementById('sf-year').value)||1, course, v('sf-status')];
-
-  let res;
-  if (editStudentId) {
-    params.push(editStudentId);
-    res = run("UPDATE Students SET StudentNo=?,LastName=?,FirstName=?,MiddleName=?,Gender=?,Birthdate=?,Address=?,Contact=?,Email=?,YearLevel=?,Course=?,Status=? WHERE StudentID=?", params);
-  } else {
-    res = run("INSERT INTO Students(StudentNo,LastName,FirstName,MiddleName,Gender,Birthdate,Address,Contact,Email,YearLevel,Course,Status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", params);
+  const id = parseInt(document.getElementById('s_id').value);
+  const data = {
+    student_no: document.getElementById('s_no').value.trim(),
+    last_name:  document.getElementById('s_last').value.trim(),
+    first_name: document.getElementById('s_first').value.trim(),
+    middle_name:document.getElementById('s_mid').value.trim(),
+    gender:     document.getElementById('s_gender').value,
+    birthdate:  document.getElementById('s_birth').value,
+    course:     document.getElementById('s_course').value,
+    year_level: parseInt(document.getElementById('s_year').value),
+    contact:    document.getElementById('s_contact').value.trim(),
+    email:      document.getElementById('s_email').value.trim(),
+    address:    document.getElementById('s_address').value.trim(),
+    status:     document.getElementById('s_status').value,
+  };
+  const alert = document.getElementById('studentAlert');
+  if (!data.student_no || !data.last_name || !data.first_name) {
+    showAlert(alert, 'Please fill in required fields.', 'danger'); return;
   }
-
-  if (res === true) {
-    closeModal('modal-student');
-    loadStudents();
-    toast(editStudentId ? 'Student updated.' : 'Student added.', 'success');
-  } else {
-    document.getElementById('sf-err').textContent = res.includes('UNIQUE') ? 'Student No. already exists.' : res;
-  }
-}
-
-function editSelectedStudent() {
-  if (!selectedStudentId) { toast('Select a student first.','info'); return; }
-  openStudentForm(selectedStudentId);
-}
-
-function deleteSelectedStudent() {
-  if (!selectedStudentId) { toast('Select a student first.','info'); return; }
-  const r = queryAll("SELECT LastName||', '||FirstName AS n FROM Students WHERE StudentID=?", [selectedStudentId])[0];
-  showConfirm(`Delete student '${r.n}'?`, 'This will also remove all their enrollment records.', () => {
-    run("DELETE FROM Enrollments WHERE StudentID=?", [selectedStudentId]);
-    run("DELETE FROM Students WHERE StudentID=?", [selectedStudentId]);
-    selectedStudentId = null;
-    loadStudents();
-    toast('Student deleted.', 'success');
-  }, 'btn-red');
-}
-
-// ══════════════════════════════════════════
-//  SUBJECTS
-// ══════════════════════════════════════════
-let selectedSubjectId = null;
-let editSubjectId = null;
-
-function loadSubjects() {
-  const s = document.getElementById('sub-search').value;
-  const like = `%${s}%`;
-  const rows = queryAll("SELECT SubjectID,SubjectCode,SubjectName,Units,YearLevel,Semester,Description FROM Subjects WHERE SubjectCode LIKE ? OR SubjectName LIKE ? ORDER BY SubjectCode", [like,like]);
-  document.getElementById('sub-count').textContent = `${rows.length} record(s)`;
-  const tb = document.getElementById('sub-tbody');
-  tb.innerHTML = rows.length ? rows.map(r => `
-    <tr data-id="${r.SubjectID}" onclick="selectRow(this,'subjects',${r.SubjectID})" ondblclick="editSelectedSubject()">
-      <td><span class="badge badge-blue">${r.SubjectCode}</span></td>
-      <td><b>${r.SubjectName}</b></td>
-      <td style="font-family:'JetBrains Mono',monospace">${r.Units}</td>
-      <td>${r.YearLevel}</td>
-      <td><span class="badge badge-amber">${r.Semester}</span></td>
-      <td style="color:var(--text3)">${r.Description||'—'}</td>
-    </tr>`).join('')
-    : `<tr><td colspan="6"><div class="no-data"><div class="no-data-icon">📚</div>No subjects found</div></td></tr>`;
-}
-
-function openSubjectForm(id = null) {
-  editSubjectId = id;
-  document.getElementById('sub-modal-title').textContent = id ? 'Edit Subject' : 'Add Subject';
-  ['subf-code','subf-name','subf-desc'].forEach(f => document.getElementById(f).value = '');
-  document.getElementById('subf-units').value = '3';
-  document.getElementById('subf-year').value = '1';
-  document.getElementById('subf-sem').value = '1st';
-  document.getElementById('subf-err').textContent = '';
-
   if (id) {
-    const r = queryAll("SELECT * FROM Subjects WHERE SubjectID=?", [id])[0];
-    if (r) {
-      document.getElementById('subf-code').value = r.SubjectCode||'';
-      document.getElementById('subf-name').value = r.SubjectName||'';
-      document.getElementById('subf-units').value = String(r.Units||3);
-      document.getElementById('subf-year').value = String(r.YearLevel||1);
-      setSelectVal('subf-sem', r.Semester);
-      document.getElementById('subf-desc').value = r.Description||'';
-    }
+    const idx = DB.students.findIndex(x => x.student_id === id);
+    DB.students[idx] = { ...DB.students[idx], ...data };
+  } else {
+    const dup = DB.students.find(s => s.student_no === data.student_no);
+    if (dup) { showAlert(alert, 'Student No. already exists.', 'danger'); return; }
+    DB.students.push({ student_id: DB._nextId.students++, date_added: new Date().toISOString().slice(0,10), ...data });
   }
-  openModal('modal-subject');
+  closeModal('studentModal');
+  loadStudents();
+}
+
+function deleteStudent(id) {
+  const s = DB.students.find(x => x.student_id === id);
+  showConfirm(`Delete student <strong>${s.last_name}, ${s.first_name}</strong>? This will also remove all their enrollment records.`, () => {
+    DB.students = DB.students.filter(x => x.student_id !== id);
+    DB.enrollments = DB.enrollments.filter(x => x.student_id !== id);
+    loadStudents();
+  });
+}
+
+// ══════════ SUBJECTS ══════════
+function loadSubjects() {
+  const search = document.getElementById('subjectSearch').value.toLowerCase();
+  const sem    = document.getElementById('subjectSem').value;
+  subjectsData = DB.subjects.filter(s => {
+    const match = (s.subject_code + ' ' + s.subject_name).toLowerCase().includes(search);
+    const semMatch = !sem || s.semester === sem;
+    return match && semMatch;
+  });
+  const html = subjectsData.map(s => `
+    <tr>
+      <td><strong>${s.subject_code}</strong></td>
+      <td>${s.subject_name}</td>
+      <td>${s.units} units</td>
+      <td>${ordinal(s.year_level)} Year</td>
+      <td>${s.semester} Sem</td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="editSubject(${s.subject_id})">✏️ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSubject(${s.subject_id})">🗑️</button>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="6"><div class="empty-state"><div class="icon">📚</div><p>No subjects found.</p></div></td></tr>';
+  document.getElementById('subjectsTable').innerHTML = html;
+}
+
+function openSubjectModal(data = null) {
+  document.getElementById('subjectModalTitle').textContent = data ? 'Edit Subject' : 'Add Subject';
+  document.getElementById('sub_id').value   = data ? data.subject_id : '';
+  document.getElementById('sub_code').value = data ? data.subject_code : '';
+  document.getElementById('sub_name').value = data ? data.subject_name : '';
+  document.getElementById('sub_units').value= data ? data.units : 3;
+  document.getElementById('sub_year').value = data ? data.year_level : 1;
+  document.getElementById('sub_sem').value  = data ? data.semester : '1st';
+  document.getElementById('sub_desc').value = data ? data.description : '';
+  document.getElementById('subjectAlert').style.display = 'none';
+  document.getElementById('subjectModal').style.display = 'flex';
+}
+
+function editSubject(id) {
+  openSubjectModal(DB.subjects.find(x => x.subject_id === id));
 }
 
 function saveSubject() {
-  const code = v('subf-code'), name = v('subf-name');
-  if (!code||!name) { document.getElementById('subf-err').textContent='Fill in required fields.'; return; }
-  const params = [code, name, parseInt(document.getElementById('subf-units').value)||3,
-    parseInt(document.getElementById('subf-year').value)||1,
-    document.getElementById('subf-sem').value, v('subf-desc')];
-  let res;
-  if (editSubjectId) {
-    params.push(editSubjectId);
-    res = run("UPDATE Subjects SET SubjectCode=?,SubjectName=?,Units=?,YearLevel=?,Semester=?,Description=? WHERE SubjectID=?", params);
+  const id = parseInt(document.getElementById('sub_id').value);
+  const data = {
+    subject_code: document.getElementById('sub_code').value.trim().toUpperCase(),
+    subject_name: document.getElementById('sub_name').value.trim(),
+    units:        parseInt(document.getElementById('sub_units').value),
+    year_level:   parseInt(document.getElementById('sub_year').value),
+    semester:     document.getElementById('sub_sem').value,
+    description:  document.getElementById('sub_desc').value.trim(),
+  };
+  const alert = document.getElementById('subjectAlert');
+  if (!data.subject_code || !data.subject_name) { showAlert(alert, 'Subject code and name are required.', 'danger'); return; }
+  if (id) {
+    const idx = DB.subjects.findIndex(x => x.subject_id === id);
+    DB.subjects[idx] = { ...DB.subjects[idx], ...data };
   } else {
-    res = run("INSERT INTO Subjects(SubjectCode,SubjectName,Units,YearLevel,Semester,Description) VALUES(?,?,?,?,?,?)", params);
+    const dup = DB.subjects.find(s => s.subject_code === data.subject_code);
+    if (dup) { showAlert(alert, 'Subject code already exists.', 'danger'); return; }
+    DB.subjects.push({ subject_id: DB._nextId.subjects++, ...data });
   }
-  if (res === true) { closeModal('modal-subject'); loadSubjects(); toast(editSubjectId?'Subject updated.':'Subject added.','success'); }
-  else document.getElementById('subf-err').textContent = res.includes('UNIQUE') ? 'Subject code already exists.' : res;
+  closeModal('subjectModal');
+  loadSubjects();
 }
 
-function editSelectedSubject() {
-  if (!selectedSubjectId) { toast('Select a subject first.','info'); return; }
-  openSubjectForm(selectedSubjectId);
-}
-
-function deleteSelectedSubject() {
-  if (!selectedSubjectId) { toast('Select a subject first.','info'); return; }
-  const r = queryAll("SELECT SubjectName FROM Subjects WHERE SubjectID=?", [selectedSubjectId])[0];
-  showConfirm(`Delete '${r.SubjectName}'?`, 'All enrollment records for this subject will also be removed.', () => {
-    run("DELETE FROM Enrollments WHERE SubjectID=?", [selectedSubjectId]);
-    run("DELETE FROM Subjects WHERE SubjectID=?", [selectedSubjectId]);
-    selectedSubjectId = null;
+function deleteSubject(id) {
+  const s = DB.subjects.find(x => x.subject_id === id);
+  showConfirm(`Delete subject <strong>${s.subject_code} — ${s.subject_name}</strong>?`, () => {
+    DB.subjects = DB.subjects.filter(x => x.subject_id !== id);
+    DB.enrollments = DB.enrollments.filter(x => x.subject_id !== id);
     loadSubjects();
-    toast('Subject deleted.','success');
-  }, 'btn-red');
+  });
 }
 
-// ══════════════════════════════════════════
-//  ENROLLMENT
-// ══════════════════════════════════════════
-let selectedEnrollId = null;
-
-function initEnrFilters() {
-  const ss = document.getElementById('enr-student');
-  ss.innerHTML = '<option value="">All Students</option>';
-  queryAll("SELECT StudentID, StudentNo||' — '||LastName||', '||FirstName AS n FROM Students WHERE Status='Active' ORDER BY LastName")
-    .forEach(r => ss.innerHTML += `<option value="${r.StudentID}">${r.n}</option>`);
-
-  const sy = document.getElementById('enr-sy');
-  sy.innerHTML = '';
-  syOptions().forEach(o => sy.innerHTML += `<option>${o}</option>`);
-  sy.value = currentSY();
-}
-
+// ══════════ ENROLLMENTS ══════════
 function loadEnrollments() {
-  const sid = document.getElementById('enr-student').value;
-  const sy = document.getElementById('enr-sy').value;
-  const sem = document.getElementById('enr-sem').value;
+  const sy  = document.getElementById('enrollSY').value;
+  const sem = document.getElementById('enrollSem').value;
+  const rows = DB.enrollments.filter(e => {
+    const syMatch  = sy === 'All Years' || e.school_year === sy;
+    const semMatch = sem === 'All' || e.semester === sem;
+    return syMatch && semMatch;
+  }).slice().reverse();
 
-  let where = 'WHERE 1=1';
-  const params = [];
-  if (sid) { where += ' AND e.StudentID=?'; params.push(parseInt(sid)); }
-  if (sy && sy !== 'All Years') { where += ' AND e.SchoolYear=?'; params.push(sy); }
-  if (sem && sem !== 'All') { where += ' AND e.Semester=?'; params.push(sem); }
-
-  const rows = queryAll(`
-    SELECT e.EnrollID, s.StudentNo, s.LastName||', '||s.FirstName AS sname,
-           sub.SubjectCode, sub.SubjectName, sub.Units,
-           e.SchoolYear, e.Semester, e.Status, e.DateEnrolled
-    FROM Enrollments e
-    JOIN Students s ON e.StudentID=s.StudentID
-    JOIN Subjects sub ON e.SubjectID=sub.SubjectID
-    ${where} ORDER BY e.DateEnrolled DESC, s.LastName`, params);
-
-  document.getElementById('enr-count').textContent = `${rows.length} record(s)`;
-  const tb = document.getElementById('enr-tbody');
-  tb.innerHTML = rows.length ? rows.map(r => `
-    <tr data-id="${r.EnrollID}" onclick="selectRow(this,'enrollment',${r.EnrollID})">
-      <td><code style="font-size:12px">${r.StudentNo}</code></td>
-      <td><b>${r.sname}</b></td>
-      <td><span class="badge badge-blue">${r.SubjectCode}</span></td>
-      <td>${r.SubjectName}</td>
-      <td style="font-family:'JetBrains Mono',monospace">${r.Units}</td>
-      <td>${r.SchoolYear}</td><td>${r.Semester}</td>
-      <td><span class="badge ${r.Status==='Enrolled'?'badge-green':'badge-gray'}">${r.Status}</span></td>
-      <td>${r.DateEnrolled||'—'}</td>
-    </tr>`).join('')
-    : `<tr><td colspan="9"><div class="no-data"><div class="no-data-icon">📋</div>No enrollment records found</div></td></tr>`;
+  const html = rows.map(e => {
+    const s   = DB.students.find(x => x.student_id === e.student_id);
+    const sub = DB.subjects.find(x => x.subject_id === e.subject_id);
+    if (!s || !sub) return '';
+    return `<tr>
+      <td>${s.student_no}</td>
+      <td>${s.last_name}, ${s.first_name}</td>
+      <td>${sub.subject_code} — ${sub.subject_name}</td>
+      <td>${sub.units}</td>
+      <td>${e.school_year}</td>
+      <td>${e.semester}</td>
+      <td><span class="badge badge-${e.status.toLowerCase()}">${e.status}</span></td>
+      <td><button class="btn btn-danger btn-sm" onclick="dropEnrollment(${e.enroll_id})">Drop</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8"><div class="empty-state"><div class="icon">📋</div><p>No enrollments found.</p></div></td></tr>';
+  document.getElementById('enrollmentsTable').innerHTML = html;
 }
 
-function openEnrollForm() {
-  const ss = document.getElementById('enrf-student');
-  ss.innerHTML = '';
-  queryAll("SELECT StudentID, StudentNo||' — '||LastName||', '||FirstName AS n FROM Students WHERE Status='Active' ORDER BY LastName")
-    .forEach(r => ss.innerHTML += `<option value="${r.StudentID}">${r.n}</option>`);
+function openEnrollModal() {
+  // Populate student dropdown
+  const sel = document.getElementById('enroll_student');
+  sel.innerHTML = DB.students.filter(s => s.status === 'Active').map(s => `<option value="${s.student_id}">${s.student_no} — ${s.last_name}, ${s.first_name}</option>`).join('');
 
-  document.getElementById('enrf-sy').value = currentSY();
-  document.getElementById('enrf-sem').value = '1st';
-  document.getElementById('enrf-err').textContent = '';
-
-  const cl = document.getElementById('enrf-subjects');
-  cl.innerHTML = '';
-  queryAll("SELECT SubjectID, SubjectCode||' — '||SubjectName||' ('||Units||' units)' AS d FROM Subjects ORDER BY SubjectCode")
-    .forEach(r => {
-      cl.innerHTML += `<label class="check-item"><input type="checkbox" value="${r.SubjectID}"> ${r.d}</label>`;
-    });
-
-  openModal('modal-enroll');
+  // Populate subject checkboxes
+  const box = document.getElementById('subjectCheckboxes');
+  box.innerHTML = DB.subjects.map(s => `
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:4px 6px;border-radius:6px;transition:background 0.15s;" onmouseover="this.style.background='#f5f7fc'" onmouseout="this.style.background=''">
+      <input type="checkbox" value="${s.subject_id}" style="accent-color:var(--navy);">
+      <span><strong>${s.subject_code}</strong> — ${s.subject_name} (${s.units}u)</span>
+    </label>`).join('');
+  document.getElementById('enrollAlert').style.display = 'none';
+  document.getElementById('enrollModal').style.display = 'flex';
 }
 
 function saveEnrollment() {
-  const sid = document.getElementById('enrf-student').value;
-  const sy = document.getElementById('enrf-sy').value.trim();
-  const sem = document.getElementById('enrf-sem').value;
-  const checked = [...document.querySelectorAll('#enrf-subjects input:checked')];
+  const sid  = parseInt(document.getElementById('enroll_student').value);
+  const sy   = document.getElementById('enroll_sy').value.trim();
+  const sem  = document.getElementById('enroll_sem').value;
+  const checked = [...document.querySelectorAll('#subjectCheckboxes input:checked')].map(c => parseInt(c.value));
+  const alert = document.getElementById('enrollAlert');
 
-  if (!sid) { document.getElementById('enrf-err').textContent='Select a student.'; return; }
-  if (!sy) { document.getElementById('enrf-err').textContent='Enter school year.'; return; }
-  if (!checked.length) { document.getElementById('enrf-err').textContent='Select at least one subject.'; return; }
+  if (!sy) { showAlert(alert, 'Please enter school year.', 'danger'); return; }
+  if (!checked.length) { showAlert(alert, 'Please select at least one subject.', 'warn'); return; }
 
   let ok = 0, dup = 0;
-  checked.forEach(c => {
-    const r = run("INSERT OR IGNORE INTO Enrollments(StudentID,SubjectID,SchoolYear,Semester) VALUES(?,?,?,?)",
-      [parseInt(sid), parseInt(c.value), sy, sem]);
-    if (r === true) {
-      const affected = queryScalar("SELECT changes()");
-      if (affected > 0) ok++; else dup++;
-    } else dup++;
+  checked.forEach(subId => {
+    const exists = DB.enrollments.find(e => e.student_id === sid && e.subject_id === subId && e.school_year === sy && e.semester === sem);
+    if (exists) { dup++; return; }
+    DB.enrollments.push({ enroll_id: DB._nextId.enrollments++, student_id: sid, subject_id: subId, school_year: sy, semester: sem, grade: null, status: 'Enrolled', enrolled_at: new Date().toISOString().slice(0,10) });
+    ok++;
   });
 
-  closeModal('modal-enroll');
-  loadEnrollments();
-  toast(`Enrolled in ${ok} subject(s)${dup>0?`. ${dup} skipped (already enrolled).`:'.'}`,'success');
+  if (ok > 0) {
+    showAlert(alert, `Enrolled in ${ok} subject(s)${dup ? `, ${dup} skipped (already enrolled).` : '.'}`, 'success');
+    loadDashboard();
+    setTimeout(() => closeModal('enrollModal'), 1200);
+  } else {
+    showAlert(alert, `All selected subjects are already enrolled.`, 'warn');
+  }
 }
 
-function dropEnrollment() {
-  if (!selectedEnrollId) { toast('Select an enrollment record first.','info'); return; }
-  const r = queryAll("SELECT s.LastName||', '||s.FirstName AS sn, sub.SubjectName as sub FROM Enrollments e JOIN Students s ON e.StudentID=s.StudentID JOIN Subjects sub ON e.SubjectID=sub.SubjectID WHERE EnrollID=?", [selectedEnrollId])[0];
-  if (!r) return;
-  showConfirm(`Drop '${r.sn}' from '${r.sub}'?`, 'This action cannot be undone.', () => {
-    run("DELETE FROM Enrollments WHERE EnrollID=?", [selectedEnrollId]);
-    selectedEnrollId = null;
+function dropEnrollment(id) {
+  const e   = DB.enrollments.find(x => x.enroll_id === id);
+  const sub = DB.subjects.find(x => x.subject_id === e.subject_id);
+  showConfirm(`Drop subject <strong>${sub.subject_code}</strong>?`, () => {
+    DB.enrollments = DB.enrollments.filter(x => x.enroll_id !== id);
     loadEnrollments();
-    toast('Subject dropped.','success');
-  }, 'btn-red');
+  });
 }
 
-// ══════════════════════════════════════════
-//  GRADES
-// ══════════════════════════════════════════
-let gradeRows = [];
-
-function initGradeFilters() {
-  const ss = document.getElementById('grd-student');
-  ss.innerHTML = '<option value="">-- Select Student --</option>';
-  queryAll("SELECT StudentID, StudentNo||' — '||LastName||', '||FirstName AS n FROM Students WHERE Status='Active' ORDER BY LastName")
-    .forEach(r => ss.innerHTML += `<option value="${r.StudentID}">${r.n}</option>`);
-
-  const sy = document.getElementById('grd-sy');
-  sy.innerHTML = '';
-  syOptions().forEach(o => sy.innerHTML += `<option>${o}</option>`);
-  sy.value = 'All Years';
-  gradeRows = [];
-  document.getElementById('grd-tbody').innerHTML = '';
-  document.getElementById('gwa-bar').style.display = 'none';
+// ══════════ GRADES ══════════
+function loadGradeStudents() {
+  const sel = document.getElementById('gradeStudentSelect');
+  sel.innerHTML = '<option value="">— Select Student —</option>' +
+    DB.students.map(s => `<option value="${s.student_id}">${s.student_no} — ${s.last_name}, ${s.first_name}</option>`).join('');
+  document.getElementById('gradesContent').innerHTML = '<div class="empty-state"><div class="icon">📝</div><p>Select a student to view grades.</p></div>';
 }
 
 function loadGrades() {
-  const sid = document.getElementById('grd-student').value;
-  document.getElementById('gwa-bar').style.display = 'none';
-  if (!sid) { document.getElementById('grd-tbody').innerHTML = ''; return; }
+  const sid = parseInt(document.getElementById('gradeStudentSelect').value);
+  const sy  = document.getElementById('gradeSY').value;
+  if (!sid) return;
 
-  const sy = document.getElementById('grd-sy').value;
-  let where = 'e.StudentID=?';
-  const params = [parseInt(sid)];
-  if (sy && sy !== 'All Years') { where += ' AND e.SchoolYear=?'; params.push(sy); }
+  const s = DB.students.find(x => x.student_id === sid);
+  let enrolls = DB.enrollments.filter(e => {
+    return e.student_id === sid && (sy === 'All Years' || e.school_year === sy);
+  });
 
-  gradeRows = queryAll(`
-    SELECT e.EnrollID, sub.SubjectCode, sub.SubjectName, sub.Units,
-           e.SchoolYear, e.Semester, e.Grade, e.Status
-    FROM Enrollments e
-    JOIN Subjects sub ON e.SubjectID=sub.SubjectID
-    WHERE ${where} ORDER BY e.SchoolYear, e.Semester, sub.SubjectCode`, params);
+  if (!enrolls.length) {
+    document.getElementById('gradesContent').innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>No enrollment records found for this student.</p></div>';
+    return;
+  }
 
-  renderGradeTable();
-  computeGWA();
-}
+  // Compute GWA
+  const graded = enrolls.filter(e => e.grade !== null);
+  let gwa = '';
+  if (graded.length > 0) {
+    const totalUnits = graded.reduce((acc, e) => { const sub = DB.subjects.find(x => x.subject_id === e.subject_id); return acc + (sub ? sub.units : 0); }, 0);
+    const weighted   = graded.reduce((acc, e) => { const sub = DB.subjects.find(x => x.subject_id === e.subject_id); return acc + (sub ? sub.units * e.grade : 0); }, 0);
+    gwa = totalUnits > 0 ? (weighted / totalUnits).toFixed(2) : '';
+  }
 
-function renderGradeTable() {
-  const tb = document.getElementById('grd-tbody');
-  tb.innerHTML = gradeRows.length ? gradeRows.map((r, i) => {
-    const g = r.Grade !== null && r.Grade !== undefined ? parseFloat(r.Grade) : null;
-    const gc = g !== null ? (g <= 3.0 ? 'grade-pass' : 'grade-fail') : '';
-    return `
-    <tr>
-      <td><span class="badge badge-blue">${r.SubjectCode}</span></td>
-      <td>${r.SubjectName}</td>
-      <td style="font-family:'JetBrains Mono',monospace">${r.Units}</td>
-      <td>${r.SchoolYear}</td><td>${r.Semester}</td>
-      <td><input class="grade-input ${gc}" id="gr-${i}" type="number" step="0.25" min="1" max="5" value="${g!==null?g:''}" placeholder="—" onchange="updateGradeRow(${i}, this.value)"></td>
-      <td><span class="badge ${r.Status==='Enrolled'?'badge-green':'badge-gray'}">${r.Status}</span></td>
+  const rows = enrolls.map(e => {
+    const sub = DB.subjects.find(x => x.subject_id === e.subject_id);
+    return `<tr>
+      <td>${sub.subject_code}</td>
+      <td>${sub.subject_name}</td>
+      <td>${sub.units}</td>
+      <td>${e.school_year}</td>
+      <td>${e.semester}</td>
+      <td><input class="grade-input" type="number" step="0.25" min="1" max="5" value="${e.grade || ''}" placeholder="—" onchange="updateGrade(${e.enroll_id}, this.value)"></td>
+      <td><span class="badge ${e.grade ? (e.grade <= 3 ? 'badge-passed' : 'badge-failed') : 'badge-enrolled'}">${e.grade ? (e.grade <= 3 ? 'Passed' : 'Failed') : 'Enrolled'}</span></td>
     </tr>`;
-  }).join('') : `<tr><td colspan="7"><div class="no-data"><div class="no-data-icon">📊</div>No enrollment records for this student</div></td></tr>`;
+  }).join('');
+
+  document.getElementById('gradesContent').innerHTML = `
+    ${gwa ? `<div class="gwa-box">
+      <div><div class="label">STUDENT</div><div style="font-size:15px;font-weight:600;">${s.last_name}, ${s.first_name}</div></div>
+      <div style="text-align:right"><div class="label">GWA</div><div class="value">${gwa}</div></div>
+    </div>` : ''}
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>Subject</th><th>Units</th><th>School Year</th><th>Semester</th><th>Grade</th><th>Status</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
 }
 
-function updateGradeRow(i, val) {
-  gradeRows[i]._newGrade = val.trim();
-  // Update color
-  const inp = document.getElementById(`gr-${i}`);
-  const g = parseFloat(val);
-  inp.className = 'grade-input' + (!isNaN(g) ? (g<=3?'  grade-pass':' grade-fail') : '');
-  computeGWA();
+function updateGrade(enrollId, val) {
+  const idx = DB.enrollments.findIndex(e => e.enroll_id === enrollId);
+  const grade = val === '' ? null : parseFloat(val);
+  if (grade !== null && (grade < 1 || grade > 5)) { alert('Grade must be between 1.00 and 5.00'); return; }
+  DB.enrollments[idx].grade = grade;
+  DB.enrollments[idx].status = grade === null ? 'Enrolled' : grade <= 3 ? 'Passed' : 'Failed';
+  // Refresh GWA without full reload
+  loadGrades();
 }
 
-function computeGWA() {
-  let tw = 0, tu = 0;
-  gradeRows.forEach((r, i) => {
-    const rawVal = document.getElementById(`gr-${i}`)?.value;
-    const g = parseFloat(rawVal);
-    if (!isNaN(g) && rawVal !== '') {
-      tw += g * r.Units;
-      tu += r.Units;
-    }
-  });
-  const bar = document.getElementById('gwa-bar');
-  if (tu > 0) {
-    bar.style.display = 'flex';
-    document.getElementById('gwa-val').textContent = (tw/tu).toFixed(2);
-    document.getElementById('gwa-units').textContent = `(${tu} units with grades)`;
-  } else { bar.style.display = 'none'; }
-}
+// ══════════ REPORTS ══════════
+function runReport(type) {
+  const sy  = document.getElementById('reportSY').value;
+  const sem = document.getElementById('reportSem').value;
+  let html = '';
 
-function saveGrades() {
-  let saved = 0;
-  let hasErr = false;
-  gradeRows.forEach((r, i) => {
-    const inp = document.getElementById(`gr-${i}`);
-    if (!inp) return;
-    const val = inp.value.trim();
-    if (val === '') {
-      run("UPDATE Enrollments SET Grade=NULL WHERE EnrollID=?", [r.EnrollID]);
-    } else {
-      const g = parseFloat(val);
-      if (isNaN(g) || g < 1 || g > 5) { hasErr = true; return; }
-      run("UPDATE Enrollments SET Grade=? WHERE EnrollID=?", [Math.round(g*100)/100, r.EnrollID]);
-    }
-    saved++;
-  });
-  if (hasErr) toast('Grade must be between 1.00 and 5.00.','error');
-  else { toast(`Grades saved for ${saved} record(s).`,'success'); loadGrades(); }
-}
-
-// ══════════════════════════════════════════
-//  REPORTS
-// ══════════════════════════════════════════
-function initReportFilters() {
-  ['rpt-sy'].forEach(id => {
-    const el = document.getElementById(id);
-    el.innerHTML = '';
-    syOptions().forEach(o => el.innerHTML += `<option>${o}</option>`);
-    el.value = currentSY();
-  });
-}
-
-function generateReport() {
-  const type = parseInt(document.getElementById('rpt-type').value);
-  const sy = document.getElementById('rpt-sy').value;
-  const sem = document.getElementById('rpt-sem').value;
-
-  let params = [];
-  let syC = '', semC = '';
-  if (sy && sy !== 'All Years') { syC = ' AND e.SchoolYear=?'; params.push(sy); }
-  if (sem && sem !== 'All') { semC = ' AND e.Semester=?'; params.push(sem); }
-
-  let sql = '';
-  let cols = [];
-
-  switch (type) {
-    case 0:
-      sql = "SELECT StudentNo AS 'Student No.', LastName||', '||FirstName AS 'Name', Gender, YearLevel AS 'Year', Course, Contact, Email FROM Students WHERE Status='Active' ORDER BY LastName";
-      params = [];
-      cols = ["Student No.","Name","Gender","Year","Course","Contact","Email"];
-      break;
-    case 1:
-      sql = `SELECT sub.SubjectCode AS 'Code', sub.SubjectName AS 'Subject', s.StudentNo, s.LastName||', '||s.FirstName AS 'Student', e.SchoolYear AS 'SY', e.Semester AS 'Sem', e.Grade FROM Enrollments e JOIN Students s ON e.StudentID=s.StudentID JOIN Subjects sub ON e.SubjectID=sub.SubjectID WHERE 1=1${syC}${semC} ORDER BY sub.SubjectCode, s.LastName`;
-      cols = ["Code","Subject","StudentNo","Student","SY","Sem","Grade"];
-      break;
-    case 2:
-      sql = `SELECT s.StudentNo, s.LastName||', '||s.FirstName AS 'Student', s.Course, e.SchoolYear AS 'SY', e.Semester AS 'Sem', COUNT(e.EnrollID) AS 'Subjects', SUM(sub.Units) AS 'Total Units', ROUND(SUM(CASE WHEN e.Grade IS NOT NULL THEN e.Grade*sub.Units ELSE 0 END)/NULLIF(SUM(CASE WHEN e.Grade IS NOT NULL THEN sub.Units ELSE 0 END),0),2) AS 'GWA' FROM Enrollments e JOIN Students s ON e.StudentID=s.StudentID JOIN Subjects sub ON e.SubjectID=sub.SubjectID WHERE 1=1${syC}${semC} GROUP BY s.StudentID,e.SchoolYear,e.Semester ORDER BY s.LastName`;
-      cols = ["StudentNo","Student","Course","SY","Sem","Subjects","Total Units","GWA"];
-      break;
-    case 3:
-      sql = "SELECT SubjectCode AS 'Code', SubjectName AS 'Subject Name', Units, YearLevel AS 'Year', Semester, Description FROM Subjects ORDER BY SubjectCode";
-      params = [];
-      cols = ["Code","Subject Name","Units","Year","Semester","Description"];
-      break;
-    case 4:
-      sql = "SELECT Course, COUNT(*) AS 'Total Students', SUM(CASE WHEN Status='Active' THEN 1 ELSE 0 END) AS 'Active' FROM Students GROUP BY Course ORDER BY Course";
-      params = [];
-      cols = ["Course","Total Students","Active"];
-      break;
+  if (type === 'enrollment_list') {
+    const rows = DB.enrollments.filter(e => e.school_year === sy && (sem === 'All' || e.semester === sem)).map(e => {
+      const s   = DB.students.find(x => x.student_id === e.student_id);
+      const sub = DB.subjects.find(x => x.subject_id === e.subject_id);
+      return `<tr><td>${s.student_no}</td><td>${s.last_name}, ${s.first_name}</td><td>${s.course}</td><td>${sub.subject_code}</td><td>${sub.subject_name}</td><td>${e.school_year}</td><td>${e.semester}</td><td><span class="badge badge-${e.status.toLowerCase()}">${e.status}</span></td></tr>`;
+    }).join('');
+    html = `<div class="card"><div class="card-header"><span class="card-title">📋 Enrollment List — ${sy}${sem !== 'All' ? ' ' + sem + ' Sem' : ''}</span></div><div class="table-wrap"><table><thead><tr><th>Student No.</th><th>Name</th><th>Course</th><th>Subject Code</th><th>Subject Name</th><th>S.Y.</th><th>Sem</th><th>Status</th></tr></thead><tbody>${rows || '<tr><td colspan="8"><div class="empty-state"><p>No records.</p></div></td></tr>'}</tbody></table></div></div>`;
+  }
+  else if (type === 'student_masterlist') {
+    const rows = DB.students.map(s => `<tr><td>${s.student_no}</td><td>${s.last_name}, ${s.first_name} ${s.middle_name||''}</td><td>${s.course}</td><td>${ordinal(s.year_level)} Year</td><td>${s.gender}</td><td><span class="badge badge-${s.status.toLowerCase()}">${s.status}</span></td></tr>`).join('');
+    html = `<div class="card"><div class="card-header"><span class="card-title">👨‍🎓 Student Masterlist</span></div><div class="table-wrap"><table><thead><tr><th>Student No.</th><th>Name</th><th>Course</th><th>Year</th><th>Gender</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  else if (type === 'grades_report') {
+    const rows = DB.enrollments.filter(e => e.school_year === sy && (sem === 'All' || e.semester === sem) && e.grade !== null).map(e => {
+      const s   = DB.students.find(x => x.student_id === e.student_id);
+      const sub = DB.subjects.find(x => x.subject_id === e.subject_id);
+      return `<tr><td>${s.student_no}</td><td>${s.last_name}, ${s.first_name}</td><td>${sub.subject_code}</td><td>${sub.subject_name}</td><td>${e.grade.toFixed(2)}</td><td><span class="badge badge-${e.grade<=3?'passed':'failed'}">${e.grade<=3?'Passed':'Failed'}</span></td></tr>`;
+    }).join('');
+    html = `<div class="card"><div class="card-header"><span class="card-title">📊 Grades Report — ${sy}${sem !== 'All' ? ' ' + sem + ' Sem' : ''}</span></div><div class="table-wrap"><table><thead><tr><th>Student No.</th><th>Name</th><th>Code</th><th>Subject</th><th>Grade</th><th>Remarks</th></tr></thead><tbody>${rows || '<tr><td colspan="6"><div class="empty-state"><p>No grades recorded yet.</p></div></td></tr>'}</tbody></table></div></div>`;
+  }
+  else if (type === 'subject_enrollment') {
+    const counts = {};
+    DB.enrollments.filter(e => e.school_year === sy && (sem === 'All' || e.semester === sem)).forEach(e => { counts[e.subject_id] = (counts[e.subject_id] || 0) + 1; });
+    const rows = DB.subjects.map(s => `<tr><td>${s.subject_code}</td><td>${s.subject_name}</td><td>${s.units}</td><td>${s.semester}</td><td><strong>${counts[s.subject_id] || 0}</strong></td></tr>`).join('');
+    html = `<div class="card"><div class="card-header"><span class="card-title">📚 Subject Enrollment Count — ${sy}</span></div><div class="table-wrap"><table><thead><tr><th>Code</th><th>Subject</th><th>Units</th><th>Sem</th><th>Enrolled Count</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  }
+  else if (type === 'dean_list') {
+    const studentGWA = {};
+    DB.students.forEach(s => {
+      const enrolls = DB.enrollments.filter(e => e.student_id === s.student_id && e.school_year === sy && (sem === 'All' || e.semester === sem) && e.grade !== null);
+      if (!enrolls.length) return;
+      const totalU = enrolls.reduce((a, e) => { const sub = DB.subjects.find(x => x.subject_id === e.subject_id); return a + sub.units; }, 0);
+      const weighted = enrolls.reduce((a, e) => { const sub = DB.subjects.find(x => x.subject_id === e.subject_id); return a + sub.units * e.grade; }, 0);
+      if (totalU > 0) studentGWA[s.student_id] = weighted / totalU;
+    });
+    const rows = DB.students.filter(s => studentGWA[s.student_id] && studentGWA[s.student_id] <= 1.75).sort((a,b) => studentGWA[a.student_id] - studentGWA[b.student_id]).map(s => `<tr><td>${s.student_no}</td><td>${s.last_name}, ${s.first_name}</td><td>${s.course}</td><td>${ordinal(s.year_level)} Year</td><td><strong>${studentGWA[s.student_id].toFixed(2)}</strong></td></tr>`).join('');
+    html = `<div class="card"><div class="card-header"><span class="card-title">🏆 Dean's List — ${sy}${sem !== 'All' ? ' ' + sem + ' Sem' : ''}</span></div><div class="table-wrap"><table><thead><tr><th>Student No.</th><th>Name</th><th>Course</th><th>Year</th><th>GWA</th></tr></thead><tbody>${rows || '<tr><td colspan="5"><div class="empty-state"><p>No students with GWA ≤ 1.75 yet.</p></div></td></tr>'}</tbody></table></div></div>`;
   }
 
-  const rows = queryAll(sql, params);
-  document.getElementById('rpt-count').textContent = `${rows.length} records`;
-
-  const actualCols = rows.length ? Object.keys(rows[0]) : cols;
-  let html = `<table><thead><tr>${actualCols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
-
-  if (rows.length) {
-    html += rows.map(r => `<tr>${actualCols.map(c => {
-      const val = r[c];
-      if (c==='Code'||c==='SubjectCode') return `<td><span class="badge badge-blue">${val||'—'}</span></td>`;
-      if (c==='Grade'||c==='GWA') {
-        if (val===null||val===undefined) return `<td style="color:var(--text3)">—</td>`;
-        const g = parseFloat(val);
-        return `<td class="${g<=3?'grade-pass':'grade-fail'}" style="font-family:'JetBrains Mono',monospace">${val}</td>`;
-      }
-      return `<td>${val!==null&&val!==undefined?val:'—'}</td>`;
-    }).join('')}</tr>`).join('');
-  } else {
-    html += `<tr><td colspan="${actualCols.length}"><div class="no-data"><div class="no-data-icon">📊</div>No data for selected filters</div></td></tr>`;
-  }
-
-  html += '</tbody></table>';
-  document.getElementById('rpt-table-wrap').innerHTML = html;
+  document.getElementById('reportOutput').innerHTML = html;
+  document.getElementById('reportOutput').scrollIntoView({ behavior: 'smooth' });
 }
 
-// ══════════════════════════════════════════
-//  MODAL HELPERS
-// ══════════════════════════════════════════
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+// ══════════ HELPERS ══════════
+function showAlert(el, msg, type = 'danger') {
+  el.className = `alert alert-${type}`;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
 
-document.addEventListener('click', e => {
-  if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
+function closeModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+function ordinal(n) {
+  const s = ['','1st','2nd','3rd','4th'];
+  return s[n] || n;
+}
+
+function showConfirm(msg, onOk) {
+  document.getElementById('confirmMsg').innerHTML = msg;
+  document.getElementById('confirmModal').style.display = 'flex';
+  const btn = document.getElementById('confirmOkBtn');
+  btn.onclick = () => { closeModal('confirmModal'); onOk(); };
+}
+
+// Close modal on backdrop click
+document.querySelectorAll('.modal-backdrop').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) closeModal(el.id); });
 });
 
-// ══════════════════════════════════════════
-//  CONFIRM DIALOG
-// ══════════════════════════════════════════
-let _confirmCb = null;
-
-function showConfirm(title, msg, cb, btnClass = 'btn-red') {
-  document.getElementById('confirm-title').textContent = title;
-  document.getElementById('confirm-msg').textContent = msg;
-  document.getElementById('confirm-ok-btn').className = `btn ${btnClass}`;
-  _confirmCb = cb;
-  document.getElementById('confirm-overlay').classList.add('open');
-}
-
-function confirmResolve(ok) {
-  document.getElementById('confirm-overlay').classList.remove('open');
-  if (ok && _confirmCb) _confirmCb();
-  _confirmCb = null;
-}
-
-// ══════════════════════════════════════════
-//  TOAST
-// ══════════════════════════════════════════
-function toast(msg, type = 'info') {
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.textContent = msg;
-  document.getElementById('toast-wrap').appendChild(el);
-  setTimeout(() => el.remove(), 3200);
-}
-
-// ══════════════════════════════════════════
-//  UTILITY
-// ══════════════════════════════════════════
-function v(id) { return (document.getElementById(id)?.value || '').trim(); }
-
-// Date
-function formatDate() {
-  return new Date().toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' });
-}
-document.getElementById('topDate').textContent = formatDate();
-
-// ══════════════════════════════════════════
-//  BOOT
-// ══════════════════════════════════════════
-(async () => {
-  await initDB();
-  refreshDashboard();
-})();
+// Init date
+document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'});
 </script>
 </body>
 </html>
